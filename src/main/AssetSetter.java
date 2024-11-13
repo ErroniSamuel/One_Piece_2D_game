@@ -32,6 +32,12 @@ public class AssetSetter {
 		gp.obj[5].worldX=30*gp.tileSize;
 		gp.obj[5].worldY=47*gp.tileSize;
 		
+		gp.obj[6]=new Coin();
+		gp.obj[6].worldX=17*gp.tileSize;
+		gp.obj[6].worldY=47*gp.tileSize;
+		
+		
+		
 		
 		
 	}

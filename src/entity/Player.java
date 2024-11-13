@@ -17,7 +17,8 @@ public class Player extends Entity {
 	
 	public final int screenX;
 	public final int screenY;
-	int hasKey=0;
+	public int hasKey=0;
+	public int coins=0;
 	Sound se=new Sound();
 	
 	public Player(GamePanel gp,KeyHandler keyH) {
@@ -117,23 +118,43 @@ public class Player extends Entity {
 				gp.playSE(1);
 				hasKey++;
 				gp.obj[i]=null;
+				gp.ui.showMessage("Got key");
 				break;
 			case "door":
-				gp.playSE(2);
 				if(hasKey>0) {
 					gp.obj[i]=null;
+					gp.playSE(2);
 					hasKey--;
+				}else {
+					gp.ui.showMessage("Not enough keys");
 				}
 				break;
 			case "food":
 				gp.playSE(3);
 				speed+=3;
 				gp.obj[i]=null;
+				gp.ui.showMessage("Boost");
+				 new Thread(() -> {
+				        try {
+				            Thread.sleep(5000);  // 5 seconds delay
+				            speed -= 3;  // Reduce the speed back after 5 seconds
+				        } catch (InterruptedException e) {
+				            e.printStackTrace();
+				        }
+				    }).start();
 				break;
 			case "chest":
-				gp.playSE(4);
+				gp.playSE(3);
 				gp.obj[i]=null;
+				coins+=30;
+				gp.ui.showMessage("got treasure");
+				gp.ui.gameFinished=true;
 				break;
+			case "coin":
+				gp.playSE(3);
+				gp.obj[i]=null;
+				coins++;
+				gp.ui.showMessage("got coin");
 			}
 			
 		}
