@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 import main.GamePanel;
 import main.KeyHandler;
 import main.Sound;
+import main.UtilityTool;
 
 public class Player extends Entity {
 	GamePanel gp;
@@ -18,7 +19,7 @@ public class Player extends Entity {
 	public final int screenX;
 	public final int screenY;
 	public int hasKey=0;
-	public int coins=0;
+	public int coins=0; 
 	Sound se=new Sound();
 	
 	public Player(GamePanel gp,KeyHandler keyH) {
@@ -45,19 +46,27 @@ public class Player extends Entity {
 		speed=4;
 	}
 	public void getPlayerImg() {
+			up1=setup("up1");
+			up2=setup("up2");
+			down1=setup("down1");
+			down2=setup("down2");
+			left1=setup("left1");
+			left2=setup("left2");
+			right1=setup("right1");
+			right2=setup("right2");
+}
+
+	
+	public BufferedImage setup(String imageName) {
+		UtilityTool uTool=new UtilityTool();
+		BufferedImage scaledImage=null;
+		
 		try {
-			up1=ImageIO.read(getClass().getResourceAsStream("/player/up1.png"));
-			up2=ImageIO.read(getClass().getResourceAsStream("/player/up2.png"));
-			down1=ImageIO.read(getClass().getResourceAsStream("/player/down1.png"));
-			down2=ImageIO.read(getClass().getResourceAsStream("/player/down2.png"));
-			left1=ImageIO.read(getClass().getResourceAsStream("/player/left1.png"));
-			left2=ImageIO.read(getClass().getResourceAsStream("/player/left2.png"));
-			right1=ImageIO.read(getClass().getResourceAsStream("/player/right1.png"));
-			right2=ImageIO.read(getClass().getResourceAsStream("/player/right2.png"));
-			
-		}catch(IOException e){
+			scaledImage=uTool.scaleImage(ImageIO.read(getClass().getResourceAsStream("/player/"+imageName+".png")),gp.tileSize,gp.tileSize);
+		}catch(IOException e) {
 			e.printStackTrace();
 		}
+		return scaledImage;
 	}
 	public void update() {
 		if(keyH.up||keyH.down||keyH.left||keyH.right) {
@@ -107,6 +116,13 @@ public class Player extends Entity {
 			spriteCounter=0;
 		}
 		}
+		else {
+			stand++;
+			if(stand==20) {
+			spriteNum=1;
+			stand=0;
+			}
+		} 
 	}
 	
 	public void pickUp(int i) {
@@ -144,14 +160,14 @@ public class Player extends Entity {
 				    }).start();
 				break;
 			case "chest":
-				gp.playSE(3);
+				gp.playSE(4);
 				gp.obj[i]=null;
 				coins+=30;
 				gp.ui.showMessage("got treasure");
 				gp.ui.gameFinished=true;
 				break;
 			case "coin":
-				gp.playSE(3);
+				gp.playSE(5);
 				gp.obj[i]=null;
 				coins++;
 				gp.ui.showMessage("got coin");
@@ -193,6 +209,6 @@ public class Player extends Entity {
 			break;
 				
 		}
-		g2.drawImage(image, screenX, screenY,gp.tileSize,gp.tileSize,null);
+		g2.drawImage(image, screenX, screenY,null);
 	}
 }

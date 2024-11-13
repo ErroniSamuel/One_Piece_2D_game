@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
 
 import main.GamePanel;
+import main.UtilityTool;
 
 public class TileManager {
 	GamePanel gp;
@@ -19,7 +20,7 @@ public class TileManager {
 		this.gp=gp;
 		tile=new Tile[10];
 		mapTileNum=new int[gp.maxWorldCol][gp.maxWorldRow];
-		getTile();
+		getTile(); 
 		loadMap("/maps/map1.txt");
 	}
 	public void loadMap(String map) {
@@ -53,22 +54,23 @@ public class TileManager {
 		
 	}
 	public void getTile() {
+			setup(0,"grass",false);
+			setup(1,"tree",true);
+			setup(2,"walln",true);
+	}
+	
+	public void setup(int index,String imagePath,boolean collision) {
+		UtilityTool uTool=new UtilityTool();
 		try {
-			tile[0]=new Tile();
-			tile[0].image=ImageIO.read(getClass().getResourceAsStream("/tiles/grass.png"));
-			
-			tile[1]=new Tile();
-			tile[1].image=ImageIO.read(getClass().getResourceAsStream("/tiles/tree.png"));
-			tile[1].collision=true;
-			
-			tile[2]=new Tile();
-			tile[2].image=ImageIO.read(getClass().getResourceAsStream("/tiles/walln.png"));
-			tile[2].collision=true;
-		
+			tile[index]=new Tile();
+			tile[index].image=ImageIO.read(getClass().getResourceAsStream("/tiles/"+imagePath+".png"));
+			tile[index].image=uTool.scaleImage(tile[index].image, gp.tileSize, gp.tileSize);
+			tile[index].collision=collision;
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
 	}
+	
 	public void draw(Graphics2D g2) {
 		int worldRow=0;
 		int worldCol=0;
@@ -84,7 +86,7 @@ public class TileManager {
 			   worldX - gp.tileSize<gp.player.worldX+gp.player.screenX &&
 			   worldY + gp.tileSize>gp.player.worldY-gp.player.screenY &&
 			   worldY - gp.tileSize<gp.player.worldY+gp.player.screenY) {
-				g2.drawImage(tile[tileNum].image,screenX,screenY,gp.tileSize,gp.tileSize,null);
+				g2.drawImage(tile[tileNum].image,screenX,screenY,null);
 			}
 			
 			worldCol++;

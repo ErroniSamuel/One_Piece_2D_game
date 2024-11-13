@@ -12,11 +12,12 @@ public class Sound {
 	public Sound() {
 			 soundURL[0] = getClass().getResource("/sounds/memories.wav");
 			 soundURL[1] = getClass().getResource("/sounds/wano.wav");
-			 soundURL[2] = getClass().getResource("/sounds/luffydoor.wav");
-			 soundURL[3] = getClass().getResource("/sounds/luffyblaugh.wav");
-			 soundURL[4] = getClass().getResource("/sounds/luffywin.wav");
+			 soundURL[2] = getClass().getResource("/sounds/Door.wav");
+			 soundURL[3] = getClass().getResource("/sounds/Eating1.wav");
+			 soundURL[4] = getClass().getResource("/sounds/chest.wav");
+			 soundURL[5] = getClass().getResource("/sounds/coin.wav");
 			 
-	}
+	} 
 	public void setFile(int i) {
         try {    
 		AudioInputStream ais = AudioSystem.getAudioInputStream(soundURL[i]);
