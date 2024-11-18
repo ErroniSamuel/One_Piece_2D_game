@@ -1,35 +1,52 @@
 package main;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.text.DecimalFormat;
+import java.io.IOException;
+import java.io.InputStream;
+import entity.Entity;
+import object.*;
 
-import object.Coin;
-import object.OBJ_Key;
 
 public class UI {
 	GamePanel gp;
-	Font arial_20,arial_40,arial_80B;
-	BufferedImage keyImage;
-	BufferedImage belly;
+	Graphics2D g2;
+	Font Obelix,MaruMonica,Original;
+	BufferedImage full_heart,half_heart,null_heart;
 	public boolean messageOn=false;
 	public String message="";
 	public boolean gameFinished=false;
-	public double playTime=0;
-	DecimalFormat dFormat=new DecimalFormat("#0.0");
+	public String currentDialogue;
+	public int commandNum=0;
+
 	public UI(GamePanel gp) {
 		this.gp=gp;
-		arial_20=new Font("Arial",Font.PLAIN,20);
-		arial_40=new Font("Arial",Font.PLAIN,40);
-		arial_80B=new Font("Arial",Font.BOLD,80);
+
+		try {
+			InputStream is=getClass().getResourceAsStream("/font/Obelix.ttf");
+			Obelix=Font.createFont(Font.TRUETYPE_FONT, is);
+
+			is=getClass().getResourceAsStream("/font/MaruMonica.ttf");
+			MaruMonica=Font.createFont(Font.TRUETYPE_FONT, is);
+
+			is=getClass().getResourceAsStream("/font/Original.ttf");
+			Original=Font.createFont(Font.TRUETYPE_FONT, is);
+		}catch(FontFormatException e) {
+			e.printStackTrace();
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
 		
-		OBJ_Key key=new OBJ_Key(gp);
-		Coin coin=new Coin(gp);
-		belly=coin.image;
-		keyImage=key.image;
-	
+		
+		//create hud object
+		Entity heart=new OBJ_Heart(gp);
+		full_heart=heart.image;
+		half_heart=heart.image2;
+		null_heart=heart.image3;
 	}
 	
 	public void showMessage(String text) {
@@ -38,70 +55,147 @@ public class UI {
 	}
 	
 	public void draw(Graphics2D g2) {
-		g2.setFont(arial_40);
+		
+		this.g2=g2;
+		
+		g2.setFont(MaruMonica);
 		g2.setColor(Color.white);
 		
-		if(gameFinished){
-			String text;
-			int textLength;
-			int x;
-			int y;
-			
-			text="You Found the ONE PIECE!!!";
-			textLength=(int)g2.getFontMetrics().getStringBounds(text,g2).getWidth();
-			
-			x=gp.screenWidth/2-textLength/2;
-			y=gp.screenWidth/2-(gp.tileSize*3);
-			g2.drawString(text, x, y);
-			
-			text="Your Time: "+dFormat.format(playTime)+"!";
-			textLength=(int)g2.getFontMetrics().getStringBounds(text,g2).getWidth();
-			
-			x=gp.screenWidth/2-textLength/2;
-			y=gp.screenWidth/2-(gp.tileSize)+3;
-			g2.drawString(text, x, y);
-			
-			g2.setFont(arial_80B);
-			g2.setColor(Color.yellow);
-			text="Congratulations!!";
-			textLength=(int)g2.getFontMetrics().getStringBounds(text,g2).getWidth();
-			
-			x=gp.screenWidth/2-textLength/2;
-			y=gp.screenWidth/2+(gp.tileSize);
-			g2.drawString(text, x, y);
-			
-			gp.game=null;
-		}else{
-			
-		g2.drawImage(keyImage, gp.tileSize/2, gp.tileSize/2, gp.tileSize, gp.tileSize, null);
-		g2.drawString("x"+gp.player.hasKey, 58, 70);
+		//titleState
+		if(gp.gameState==gp.titleState) {
+			drawTitleScreen();
+		}
 		
-		g2.drawImage(belly, gp.tileSize/2 +75, gp.tileSize/2, gp.tileSize, gp.tileSize, null);
-		g2.drawString("x"+gp.player.coins, 145, 70);
+		//Playstate
+		if(gp.gameState==gp.playState) {
+			drawPlayerLife();
+		}
 		
-		g2.setFont(arial_20);
-		playTime+=(double)1/60+0.01;
-		g2.drawString("Time:"+dFormat.format(playTime), gp.tileSize/3, 565);
-		g2.setFont(arial_40);
-		if(messageOn) {
-			g2.setFont(g2.getFont().deriveFont(30F));
-			g2.setColor(Color.white);
-			g2.fillRect(gp.tileSize/2-15,245, message.length()*16+14,90);
-			g2.setColor(Color.black);
-			g2.fillRect(gp.tileSize/2-10,250, message.length()*16+6, 80);
-			g2.setColor(Color.white);
-			g2.drawString(message, gp.tileSize/2, 300);
-
-			
-			new Thread(()->{
-				try{
-					Thread.sleep(2000);
-					messageOn=false;
-				}catch(InterruptedException e) {
-					e.printStackTrace();
-				}
-			}).start();
+		//pausestate
+		if(gp.gameState==gp.pauseState) {
+		drawPlayerLife();
+		drawPauseScreen();	
+		}
+		//dialogue state
+		if(gp.gameState==gp.dialogueState) {
+			drawDialogueScreen();
+		}
+	
+	}
+	public void drawTitleScreen() {
+		g2.setColor(Color.red);
+		g2.fillRect(0, 0, gp.screenWidth,gp.screenHeight);
+		g2.setFont(Original);
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD,100F));
+		String text="One Piece Adventure";
+		int x=getXforCenteredText(text);
+		int y=gp.tileSize*2;
+		
+		// shadow
+		g2.setColor(Color.black);
+		g2.drawString(text,x+5,y+5);
+		
+		//main
+		g2.setColor(Color.white);
+		g2.drawString(text,x,y);
+		
+		//luffy
+		
+		x=gp.screenWidth/2;
+		y+=gp.tileSize*2;
+		g2.drawImage(gp.player.down1, x-40, y-25, gp.tileSize*2, gp.tileSize*2,null);
+		
+		//menu
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD,48F));
+		
+		text="New Game";
+		x=getXforCenteredText(text);
+		y+=gp.tileSize*3;
+		g2.drawString(text, x, y);
+		if(commandNum==0) {
+			g2.drawString(">", x-gp.tileSize, y);
+		}
+		
+		text="Load Game";
+		x=getXforCenteredText(text);
+		y+=gp.tileSize;
+		g2.drawString(text, x, y);
+		if(commandNum==1) {
+			g2.drawString(">", x-gp.tileSize, y);
+		}
+		
+		text="Quit";
+		x=getXforCenteredText(text);
+		y+=gp.tileSize;
+		g2.drawString(text, x, y);
+		if(commandNum==2) {
+			g2.drawString(">", x-gp.tileSize, y);
 		}
 	}
+	public void drawPauseScreen() {
+		g2.setFont(g2.getFont().deriveFont(Font.PLAIN,80F));
+		String text="Paused";
+		int x=getXforCenteredText(text);
+		int y=gp.screenHeight/2;
+		g2.drawString(text, x, y);
+		
+	}
+	public void drawPlayerLife() {
+		int x=gp.tileSize/2;
+		int y=gp.tileSize/3;
+		int i=0;
+		
+		//blank heart
+		while(i<gp.player.maxLife/2) {
+			g2.drawImage(null_heart, x, y,null);
+			i++;
+			x+=gp.tileSize;
+		}
+		 x=gp.tileSize/2;
+	     y=gp.tileSize/3;
+		 i=0;
+		 
+		 //draw current life
+		 while(i<gp.player.life) {
+			 g2.drawImage(half_heart, x, y,null);
+			 i++;
+			 if(i<gp.player.life) {
+				 g2.drawImage(full_heart,x,y,null);
+			 }
+			 i++;
+			 x+=gp.tileSize;
+		 }
+	}
+	public void drawDialogueScreen() {
+		int x=gp.tileSize*2;
+		int y=gp.tileSize/3;
+		int width=gp.screenWidth-(gp.tileSize*4);
+		int height=gp.tileSize*4;
+		drawSubWindow(x,y,width,height);
+		
+		g2.setFont(g2.getFont().deriveFont(Font.PLAIN,30F));
+		x+=gp.tileSize;
+		y+=gp.tileSize+20;
+		
+		for(String line:currentDialogue.split("\n")) {
+		g2.drawString(line, x, y-10);
+		y+=40;
+		}
+	}
+	public void drawSubWindow(int x,int y,int width,int height) {
+		Color c=new Color(0,0,0,220);
+		g2.setColor(c);
+		
+		g2.fillRoundRect(x, y, width, height, 35,35);
+		
+		c=new Color(255,255,255);
+		g2.setColor(c);
+		g2.setStroke(new BasicStroke(5));
+		g2.drawRoundRect(x+5,y+5,width-10,height-10,25,25);
+	}
+	public int getXforCenteredText(String text) {
+		int length=(int)g2.getFontMetrics().getStringBounds(text,g2).getWidth();
+		int x=gp.screenWidth/2-length/2;
+		return x;
 	}
 }

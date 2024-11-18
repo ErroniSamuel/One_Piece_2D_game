@@ -4,11 +4,14 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.swing.JPanel;
 
+import entity.Entity;
 import entity.Player;
-import object.SuperObject;
 import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable{
@@ -22,31 +25,39 @@ public class GamePanel extends JPanel implements Runnable{
 	public int screenHeight=tileSize*maxScreenRow;
 	
 	
-	public final int maxWorldCol=50;
-	public final int maxWorldRow=50;
+	public  int maxWorldCol;
+	public  int maxWorldRow;
 	
 	
 	
 	TileManager tileM=new TileManager(this);
-	KeyHandler keyH=new KeyHandler(this);
+	public KeyHandler keyH=new KeyHandler(this);
 	Sound sound=new Sound();
 	Sound se=new Sound();
 	public CollisionCheck checker=new CollisionCheck(this);
 	public AssetSetter as=new AssetSetter(this);
 	public UI ui=new UI(this);
+	public EventHandler eHandler=new EventHandler(this);
 	Thread game;
 	
 	
 	public Player player=new Player(this,keyH);
-	public SuperObject obj[]=new SuperObject[10];
+	public Entity obj[]=new Entity[10];
+	public Entity npcs[]=new Entity[10];
+	public Entity monster[]=new Entity[20];
+	ArrayList<Entity> entityList=new ArrayList<>();
 	
+	public int currNPC=-1;
+	public boolean firstTime=true;
 	public int gameState;
+	public final int titleState=0;
 	public final int playState=1;
 	public final int pauseState=2;
+	public final int dialogueState=3;
 	
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenWidth,screenHeight));
-		this.setBackground(Color.cyan);
+		this.setBackground(new Color(41,175,255));
 		this.setDoubleBuffered(true);
 		this.addKeyListener(keyH);
 		this.setFocusable(true);
@@ -54,8 +65,10 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public void setupObj() {
 		as.setObject();
-		playMusic(0);
-		gameState=playState;
+		as.setNPC();
+		as.setMonster();
+		//playMusic(0);
+		gameState=titleState;
 	}
 	
 	public void start() {
@@ -92,7 +105,19 @@ public class GamePanel extends JPanel implements Runnable{
 	}
 	public void update() {
 		if(gameState==playState) {
-		player.update();
+		//player
+			player.update();
+		//NPC
+		for(int i=0;i<npcs.length;i++) {
+			if(npcs[i]!=null) {
+				npcs[i].update();
+			}
+		}
+		for(int i=0;i<monster.length;i++) {
+			if(monster[i]!=null) {
+				monster[i].update();
+			}
+		}
 		}
 		if(gameState==pauseState) {
 			
@@ -102,17 +127,50 @@ public class GamePanel extends JPanel implements Runnable{
 		super.paintComponent(g);
 		Graphics2D g2=(Graphics2D)g;
 		
-		tileM.draw(g2);
+		//Title screen
+		if(gameState==titleState) {
+			ui.draw(g2);
+		}
+		//other
+		else {
 		
+		tileM.draw(g2);
+		entityList.add(player);
+		for(int i=0;i<npcs.length;i++) {
+			if(npcs[i]!=null) {
+				entityList.add(npcs[i]);
+			}
+		}
 		for(int i=0;i<obj.length;i++) {
 			if(obj[i]!=null) {
-				obj[i].draw(g2,this);
+				entityList.add(obj[i]);
+			}
+		}
+		for(int i=0;i<monster.length;i++) {
+			if(monster[i]!=null) {
+				entityList.add(monster[i]);
 			}
 		}
 		
-		player.draw(g2);
+		Collections.sort(entityList,new Comparator<Entity>() {
+
+			@Override
+			public int compare(Entity e1, Entity e2) {
+				// TODO Auto-generated method stub
+				int result=Integer.compare(e1.worldY, e2.worldY);
+				return result;
+			}
+		});
+		
+		for(int i=0;i<entityList.size();i++) {
+			entityList.get(i).draw(g2);
+		}
+		entityList.clear();
+		
 		ui.draw(g2);
+		}
 		g2.dispose();
+	
 	}
 	public void playMusic(int i) {
 		sound.setFile(i);

@@ -16,7 +16,6 @@ window.pack();
 window.setLocationRelativeTo(null);
 window.setVisible(true);
 
-
 gp.setupObj();
 gp.start();
 

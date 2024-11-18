@@ -1,21 +1,17 @@
 package object;
 
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 
+import entity.Entity;
 import main.GamePanel;
 
-public class OBJ_Food extends SuperObject{
-	GamePanel gp;
+public class OBJ_Food extends Entity{
+	
 	public OBJ_Food(GamePanel gp){
-		this.gp=gp;
+		super(gp);
 		name="food";
-		try {image=ImageIO.read(getClass().getResourceAsStream("/objects/food.png"));
-		uTool.scaleImage(image, gp.tileSize, gp.tileSize);
-
-		}catch(IOException e) {
-			e.printStackTrace();
-		}
-		}
+		
+		down1=setup("/objects/food",gp.tileSize,gp.tileSize);
+		
+	}
 }
