@@ -1,7 +1,7 @@
 package main;
 
 import entity.NPC_Coby;
-import monster.MON_Cryo;
+import monster.*;
 import object.*;
 
 public class AssetSetter {
@@ -20,14 +20,57 @@ public class AssetSetter {
 
 	}
 	public void setMonster() {
-		gp.monster[0]=new MON_Cryo(gp);
-		gp.monster[0].worldX=gp.tileSize*25;
-		gp.monster[0].worldY=gp.tileSize*5;
-		
+		int i=0;
+		gp.monster[i]=new MON_Cryo(gp);
+		gp.monster[i].worldX=gp.tileSize*25;
+		gp.monster[i].worldY=gp.tileSize*5;
+		i++;
 
-		gp.monster[1]=new MON_Cryo(gp);
-		gp.monster[1].worldX=gp.tileSize*20;
-		gp.monster[1].worldY=gp.tileSize*6;
+		gp.monster[i]=new MON_Cryo(gp);
+		gp.monster[i].worldX=gp.tileSize*20;
+		gp.monster[i].worldY=gp.tileSize*6;
+		i++;
 		
+		gp.monster[i]=new MON_Dendro(gp);
+		gp.monster[i].worldX=gp.tileSize*25;
+		gp.monster[i].worldY=gp.tileSize*10;
+		i++;
+
+		gp.monster[i]=new MON_Dendro(gp);
+		gp.monster[i].worldX=gp.tileSize*20;
+		gp.monster[i].worldY=gp.tileSize*10;
+		i++;
+		
+		gp.monster[i]=new MON_Pyro(gp);
+		gp.monster[i].worldX=gp.tileSize*30;
+		gp.monster[i].worldY=gp.tileSize*5;
+		i++;
+
+		gp.monster[i]=new MON_Pyro(gp);
+		gp.monster[i].worldX=gp.tileSize*30;
+		gp.monster[i].worldY=gp.tileSize*10;
+		i++;
+		
+		
+		gp.monster[i]=new MON_Hydro(gp);
+		gp.monster[i].worldX=gp.tileSize*25;
+		gp.monster[i].worldY=gp.tileSize*15;
+		i++;
+
+		gp.monster[i]=new MON_Hydro(gp);
+		gp.monster[i].worldX=gp.tileSize*20;
+		gp.monster[i].worldY=gp.tileSize*16;
+		i++;
+		
+		
+		gp.monster[i]=new MON_Electro(gp);
+		gp.monster[i].worldX=gp.tileSize*25;
+		gp.monster[i].worldY=gp.tileSize*20;
+		i++;
+
+		gp.monster[i]=new MON_Electro(gp);
+		gp.monster[i].worldX=gp.tileSize*20;
+		gp.monster[i].worldY=gp.tileSize*26;
+		i++;
 	}
 }

@@ -5,20 +5,20 @@ import java.util.Random;
 import entity.Entity;
 import main.GamePanel;
 
-public class MON_Cryo extends Entity {
+public class MON_Electro extends Entity {
 	GamePanel gp;
-	public MON_Cryo(GamePanel gp) {
+	public MON_Electro(GamePanel gp) {
 		super(gp);
 		this.gp=gp;
-		name="Cryo";
+		name="electro";
 		
 		speed=1;
-		maxLife=6;
+		maxLife=10;
 		life=maxLife;
 		type=2;
-		attack=5;
+		attack=6;
 		defence=0;
-		exp=2;
+		exp=4;
 		
 		solidArea.x=2;
 		solidArea.y=16;
@@ -30,14 +30,14 @@ public class MON_Cryo extends Entity {
 		
 	}
 	public void getImage() {
-		up1=setup("/monsters/cryo_down1",gp.tileSize,gp.tileSize);
-		up2=setup("/monsters/cryo_down2",gp.tileSize,gp.tileSize);
-		down1=setup("/monsters/cryo_down1",gp.tileSize,gp.tileSize);
-		down2=setup("/monsters/cryo_down2",gp.tileSize,gp.tileSize);
-		left1=setup("/monsters/cryo_down1",gp.tileSize,gp.tileSize);
-		left2=setup("/monsters/cryo_down2",gp.tileSize,gp.tileSize);
-		right1=setup("/monsters/cryo_down1",gp.tileSize,gp.tileSize);
-		right2=setup("/monsters/cryo_down2",gp.tileSize,gp.tileSize);
+		up1=setup("/monsters/electro1",gp.tileSize,gp.tileSize);
+		up2=setup("/monsters/electro2",gp.tileSize,gp.tileSize);
+		down1=setup("/monsters/electro1",gp.tileSize,gp.tileSize);
+		down2=setup("/monsters/electro2",gp.tileSize,gp.tileSize);
+		left1=setup("/monsters/electro1",gp.tileSize,gp.tileSize);
+		left2=setup("/monsters/electro2",gp.tileSize,gp.tileSize);
+		right1=setup("/monsters/electro1",gp.tileSize,gp.tileSize);
+		right2=setup("/monsters/electro2",gp.tileSize,gp.tileSize);
 	}
 	public void setAction() {
 	actionLookCounter++;

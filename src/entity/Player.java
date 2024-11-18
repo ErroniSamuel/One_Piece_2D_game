@@ -13,12 +13,16 @@ import main.KeyHandler;
 import main.Sound;
 import main.UI;
 import main.UtilityTool;
+import object.OBJ_Armour;
+import object.OBJ_Sword_Normal;
 
 public class Player extends Entity {
 	KeyHandler keyH;
 	
 	public final int screenX;
-	public final int screenY; 
+	public final int screenY;
+	public int attackCooldown=0;
+	public boolean attackCancelled=false;
 	Sound se=new Sound();
 	
 	public Player(GamePanel gp,KeyHandler keyH) {
@@ -35,6 +39,10 @@ public class Player extends Entity {
 		solidAreaDefaultX=solidArea.x;
 		solidAreaDefaultY=solidArea.y;
 		solidArea.height=32;
+		
+		attackArea.width=36;
+		attackArea.height=36;
+		
 		setDefaultValues();
 		getPlayerImg();
 		getPlayerAttackImage();
@@ -46,8 +54,24 @@ public class Player extends Entity {
 		speed=4;
 		
 		//player status
-		maxLife=10;
+		level=1;
+		maxLife=4;
 		life=maxLife;
+		strength=1;
+		dexterity=1;
+		exp=0;
+		nextLevelExp=10;
+		coin=0;
+		currentHaki= new OBJ_Sword_Normal(gp);
+		currentShield=new OBJ_Armour(gp);
+		attack=getAttack();
+		defence=getDefence();
+	}
+	public int getAttack() {
+		return attack=strength*currentHaki.attackValue;
+	}
+	public int getDefence() {
+		return defence=dexterity*currentShield.defenseValue;
 	}
 	public void getPlayerImg() {
 			up1=setup("/player/up1",gp.tileSize,gp.tileSize);
@@ -73,27 +97,26 @@ public class Player extends Entity {
 
 	public void update() {
 		
-		if(attacking) {
-			attacking();
-		}
+		 if (attackCooldown > 0) {
+	            attackCooldown--; // Decrease cooldown each frame
+	        }
+
+	        if (attacking) {
+	            if (attackCooldown == 0) { // Only play sound if cooldown is over
+	                gp.playSE(7); // Adjust this to your attack sound effect
+	                attackCooldown = 30; // Cooldown duration in frames (adjust as needed)
+	                 
+	            }
+	           attacking();
+	            return;
+	        }
+	
 		
 		if(keyH.up||keyH.down||keyH.left||keyH.right||keyH.enterPressed) {
-		if(keyH.up) {
-			direction="up";
-			
-		}
-		if(keyH.down) {
-			direction="down";
-			
-		}
-		if(keyH.left) {
-			direction="left";
-			
-		}
-		if(keyH.right) {
-			direction="right";
-			
-		}
+		if(keyH.up) {direction="up";}
+		if(keyH.down) {direction="down";}
+		if(keyH.left) {direction="left";}
+		if(keyH.right) {direction="right";}
 		// check tile collision
 		collisionOn=false;
 		gp.checker.checkTile(this);
@@ -129,7 +152,15 @@ public class Player extends Entity {
 				break;
 			}
 		}
+		
+		if(keyH.enterPressed && !attackCancelled) {
+			attacking=true;
+//			spriteCounter=0;
+		}
+		attackCancelled=false;
+		
 		gp.keyH.enterPressed=false;
+		
 		spriteCounter++;
 		if(spriteCounter>10) {
 			if(spriteNum==1) {
@@ -140,13 +171,13 @@ public class Player extends Entity {
 			spriteCounter=0;
 		}
 		}
-		else {
-			stand++;
-			if(stand==20) {
-			spriteNum=1;
-			stand=0;
-			}
-		} 
+//		else {
+//			stand++;
+//			if(stand==20) {
+//			spriteNum=1;
+//			stand=0;
+//			}
+//		} 
 		//invincibility
 		if(invincible) {
 			invincibleCount++;
@@ -162,10 +193,35 @@ public class Player extends Entity {
 		if(spriteCounter<=5) {
 			spriteNum=1;
 		}
-		if(spriteCounter>5&&spriteCounter<=25) {
+		if(spriteCounter>5&&spriteCounter<=10) {
 			spriteNum=2;
+			
+			int currentWorldX=worldX;
+			int currentWorldY=worldY;
+			int solidAreaWidth=solidArea.width;
+			int solidAreaHeight=solidArea.height;
+			
+			//adjust x,y for attack area
+			switch(direction) {
+			case "up":worldY-=attackArea.height;break;
+			case "down":worldY+=attackArea.height;break;
+			case "left":worldX-=attackArea.width;break;
+			case "right":worldX+=attackArea.width;break;
+			}
+			//attack area become solidArea
+			solidArea.width=attackArea.width;
+			solidArea.height=attackArea.height;
+			
+			//check monster collision
+			int monsterIndex=gp.checker.checkEntity(this,gp.monster);
+			
+			worldX=currentWorldX;
+			worldY=currentWorldY;
+			solidArea.width=solidAreaWidth;
+			solidArea.height=solidAreaHeight;
+			damageMonster(monsterIndex);
 		}
-		if(spriteCounter>25) {
+		if(spriteCounter>15) {
 			spriteNum=1;
 			spriteCounter=0;
 			attacking=false;
@@ -186,38 +242,93 @@ public class Player extends Entity {
 	}
 	public UI ui=new UI(gp);
 	public void interactNPC(int i) {
-	if(i!=999) {
-		if(gp.firstTime) {
-		gp.ui.currentDialogue="Press Enter to Interact with characters \n from next time, \n N->for next dialogue \n Enter->for exiting dialogue";
-		gp.gameState=gp.dialogueState;
-		gp.firstTime=false;
-		}
+		if(gp.firstTime && i!=999) {
+			gp.ui.currentDialogue="Press Enter to Interact with characters \n from next time, \n N->for next dialogue \n Enter->for exiting dialogue";
+			gp.gameState=gp.dialogueState;
+			gp.firstTime=false;
+			}
 		if(gp.keyH.enterPressed) {
+		if(i!=999) {
+		attackCancelled=true;
 		gp.gameState=gp.dialogueState;
 		gp.npcs[i].speak();
 		gp.currNPC=i;
-		}	
+		}
+		}
+		
 	}
-	
-	}
+		
 	public void contactMonster(int i) {
 		if(i!=999) {
 			invincibleCount++;
 			if(!invincible) {
-				life-=1;
+				gp.playSE(8);
+				int damage=gp.monster[i].attack-defence;
+				if(damage<0) {
+					damage=1;
+				}
+				life-=damage;
 				invincible=true;
 			}
 		}
 	}
-	
+	public void damageMonster(int i) {
+		if(i!=999) {
+			if(!gp.monster[i].invincible) {
+				gp.playSE(6);
+				
+				int damage=attack-gp.monster[i].defence;
+				if(damage<0) {
+					damage=1;
+				}
+				gp.monster[i].life-=damage;
+				gp.ui.addMessage(damage+" damage");
+				gp.monster[i].invincible=true;
+				gp.monster[i].damageReaction();
+				if(gp.monster[i].life<=0) {
+					gp.monster[i].dying=true;
+					gp.ui.addMessage("killed "+gp.monster[i].name);
+					exp+=gp.monster[i].exp;
+					checkLevelUp();
+				}
+			}
+		}
+	}
+	public void checkLevelUp() {
+		if(exp>=nextLevelExp) {
+			level++;
+			nextLevelExp=nextLevelExp*2;
+			maxLife+=2;
+			strength++;
+			dexterity++;
+			attack=getAttack();
+			defence=getDefence();
+			
+			gp.playSE(9);
+			gp.gameState=gp.dialogueState;
+			gp.ui.currentDialogue="                        Level "+level;
+//			updateMonsters();
+		}
+	}
+//	public void updateMonsters() {
+//		for(int i=0;i<gp.monster.length;i++) {
+//			if(gp.monster[i]!=null) {
+//			gp.monster[i].maxLife+=2;
+//			gp.monster[i].exp+=2;
+//			}
+//		}
+//	}
 	public void draw(Graphics2D g2) {
 		BufferedImage image=null;
+		int tempScreenX=screenX;
+		int tempScreenY=screenY;
 		switch(direction) {
 		case "up": 
 			if(!attacking) {
 			if(spriteNum==1){image=up1;}
 			if(spriteNum==2){image=up2;}
 			}else {
+			tempScreenY=screenY-gp.tileSize;
 			if(spriteNum==1){image=attackup1;}
 			if(spriteNum==2){image=attackup2;}
 			}
@@ -236,6 +347,7 @@ public class Player extends Entity {
 			if(spriteNum==1){image=left1;}
 			if(spriteNum==2){image=left2;}
 			}else {
+				tempScreenX=screenX-gp.tileSize;
 			if(spriteNum==1){image=attackleft1;}
 		    if(spriteNum==2){image=attackleft2;}
 			}
@@ -253,11 +365,11 @@ public class Player extends Entity {
 		}
 		
 		if(invincible){
-			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.3f));
-		}
-		g2.drawImage(image, screenX, screenY,null);
-		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
-		
+			changeAlpha(g2,0.4f);
+			}
+	
+		g2.drawImage(image, tempScreenX, tempScreenY,null);
+		changeAlpha(g2,1f);
 	
 	}
 }

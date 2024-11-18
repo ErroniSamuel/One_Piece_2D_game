@@ -119,9 +119,11 @@ public class EventHandler {
 		}
 		if(gp.keyH.enterPressed) {
 		gp.gameState=gameState;
+		gp.player.attackCancelled=true;
 		gp.playSE(4);
 		gp.ui.currentDialogue="You had rest and now are ready to go";
 		gp.player.life=gp.player.maxLife;
+		gp.as.setMonster();
 		}
 		canTouchEvent=false;
 	}

@@ -5,12 +5,12 @@ import java.util.Random;
 import entity.Entity;
 import main.GamePanel;
 
-public class MON_Cryo extends Entity {
+public class MON_Hydro extends Entity {
 	GamePanel gp;
-	public MON_Cryo(GamePanel gp) {
+	public MON_Hydro(GamePanel gp) {
 		super(gp);
 		this.gp=gp;
-		name="Cryo";
+		name="hydro";
 		
 		speed=1;
 		maxLife=6;
@@ -30,14 +30,14 @@ public class MON_Cryo extends Entity {
 		
 	}
 	public void getImage() {
-		up1=setup("/monsters/cryo_down1",gp.tileSize,gp.tileSize);
-		up2=setup("/monsters/cryo_down2",gp.tileSize,gp.tileSize);
-		down1=setup("/monsters/cryo_down1",gp.tileSize,gp.tileSize);
-		down2=setup("/monsters/cryo_down2",gp.tileSize,gp.tileSize);
-		left1=setup("/monsters/cryo_down1",gp.tileSize,gp.tileSize);
-		left2=setup("/monsters/cryo_down2",gp.tileSize,gp.tileSize);
-		right1=setup("/monsters/cryo_down1",gp.tileSize,gp.tileSize);
-		right2=setup("/monsters/cryo_down2",gp.tileSize,gp.tileSize);
+		up1=setup("/monsters/hydro1",gp.tileSize,gp.tileSize);
+		up2=setup("/monsters/hydro2",gp.tileSize,gp.tileSize);
+		down1=setup("/monsters/hydro1",gp.tileSize,gp.tileSize);
+		down2=setup("/monsters/hydro2",gp.tileSize,gp.tileSize);
+		left1=setup("/monsters/hydro1",gp.tileSize,gp.tileSize);
+		left2=setup("/monsters/hydro2",gp.tileSize,gp.tileSize);
+		right1=setup("/monsters/hydro1",gp.tileSize,gp.tileSize);
+		right2=setup("/monsters/hydro2",gp.tileSize,gp.tileSize);
 	}
 	public void setAction() {
 	actionLookCounter++;
