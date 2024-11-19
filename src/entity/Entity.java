@@ -55,17 +55,21 @@ public class Entity {
 	public int exp;
 	public int nextLevelExp;
 	public int coin;
+	public int characterType;
 	public Entity currentHaki;
 	public Entity currentShield;
 	
 	//item Attributes
 	public int attackValue;
-	public int defenseValue;
-	
+	public int defenceValue;
+	public String description="";
 	public Entity(GamePanel gp) {
 		this.gp=gp;
 	}
-	
+
+	public void getPlayerAttackImg(GamePanel gp) {}
+	public void getPlayerAttackImg() {}
+	public void getPlayerImg() {}
 	public void setAction() {}
 	public void damageReaction() {}
 	public void speak() {
@@ -108,11 +112,20 @@ public class Entity {
 			if(!gp.player.invincible) {
 				gp.playSE(8);
 				
-				int damage=attack-gp.player.defence;
+				int damage=0;
+				if(gp.currentCharacter=="Luffy") {
+				damage=attack-gp.player.luffy.defence;
 				if(damage<0) {
-					damage=1;
+					damage=0;
 				}
-				gp.player.life-=damage;
+				gp.player.luffy.life-=damage;
+				}else if(gp.currentCharacter=="Zoro") {
+					damage=attack-gp.player.zoro.defence;
+					if(damage<0) {
+						damage=0;
+					}
+					gp.player.zoro.life-=damage;
+					}
 				gp.player.invincible=true;
 			}
 		}

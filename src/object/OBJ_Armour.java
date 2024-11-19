@@ -9,6 +9,7 @@ public class OBJ_Armour extends Entity{
 		super(gp);
 		name="Armour";
 		down1=setup("/objects/Armour",gp.tileSize,gp.tileSize);
-		defenseValue=1;
+		defenceValue=1;
+		description="["+name+"]"+" 2x defence";
 	}
 }

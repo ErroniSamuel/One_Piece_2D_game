@@ -20,6 +20,7 @@ public class Sound {
 			 soundURL[7] = getClass().getResource("/sounds/receive_damage.wav");
 			 soundURL[8] = getClass().getResource("/sounds/attack_pistol.wav");
 			 soundURL[9] = getClass().getResource("/sounds/levelup.wav");
+			 soundURL[10] = getClass().getResource("/sounds/cursor.wav");
 			 
 	} 
 	public void setFile(int i) {

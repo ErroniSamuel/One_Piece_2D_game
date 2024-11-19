@@ -9,5 +9,6 @@ public OBJ_Sword_Normal(GamePanel gp) {
 	name="shusui";
 	down1=setup("/objects/shusui",gp.tileSize,gp.tileSize);
 	attackValue=1;
+	description="["+name+"]"+" 2x damage and \n should be equipped \n by zoro";
 }
 }

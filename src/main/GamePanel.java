@@ -11,7 +11,9 @@ import java.util.Comparator;
 import javax.swing.JPanel;
 
 import entity.Entity;
+import entity.Luffy;
 import entity.Player;
+import entity.Zoro;
 import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable{
@@ -55,6 +57,7 @@ public class GamePanel extends JPanel implements Runnable{
 	public final int pauseState=2;
 	public final int dialogueState=3;
 	public final int characterState=4;
+	public String currentCharacter="Luffy";
 	
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenWidth,screenHeight));
@@ -62,6 +65,30 @@ public class GamePanel extends JPanel implements Runnable{
 		this.setDoubleBuffered(true);
 		this.addKeyListener(keyH);
 		this.setFocusable(true);
+		 player = new Player(this,keyH);  // Ensure player is created before calling methods that depend on it
+
+	        // Now you can safely create Luffy or Zoro after the player is initialized
+//	        Luffy luffy = new Luffy(this);
+//	        luffy.getPlayerImg();
+//	        luffy.getPlayerAttackImage(this);
+		 loadCharacter(currentCharacter);
+	
+		
+	}
+	public void switchCharacter(String characterName) {
+		currentCharacter=characterName;
+		loadCharacter(currentCharacter);
+	}
+	public void loadCharacter(String characterName) {
+		 if (characterName.equals("Zoro")) {
+	            Zoro zoro = new Zoro(this);
+	            zoro.getPlayerImg();
+	            zoro.getPlayerAttackImage();
+	        } else if (characterName.equals("Luffy")) {
+	            Luffy luffy = new Luffy(this);
+	            luffy.getPlayerImg();
+	            luffy.getPlayerAttackImage();
+	        }
 	}
 	
 	public void setupObj() {
@@ -129,55 +156,44 @@ public class GamePanel extends JPanel implements Runnable{
 			
 		}
 	}
+//	
 	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		Graphics2D g2=(Graphics2D)g;
-		
-		//Title screen
-		if(gameState==titleState) {
-			ui.draw(g2);
-		}
-		//other
-		else {
-		
-		tileM.draw(g2);
-		entityList.add(player);
-		for(int i=0;i<npcs.length;i++) {
-			if(npcs[i]!=null) {
-				entityList.add(npcs[i]);
-			}
-		}
-		for(int i=0;i<obj.length;i++) {
-			if(obj[i]!=null) {
-				entityList.add(obj[i]);
-			}
-		}
-		for(int i=0;i<monster.length;i++) {
-			if(monster[i]!=null) {
-				entityList.add(monster[i]);
-			}
-		}
-		
-		Collections.sort(entityList,new Comparator<Entity>() {
+	    super.paintComponent(g);
+	    Graphics2D g2 = (Graphics2D) g;
 
-			@Override
-			public int compare(Entity e1, Entity e2) {
-				// TODO Auto-generated method stub
-				int result=Integer.compare(e1.worldY, e2.worldY);
-				return result;
-			}
-		});
-		
-		for(int i=0;i<entityList.size();i++) {
-			entityList.get(i).draw(g2);
-		}
-		entityList.clear();
-		
-		ui.draw(g2);
-		}
-		g2.dispose();
-	
+	    if (gameState == titleState) {
+	        ui.draw(g2);
+	    } else {
+	        tileM.draw(g2);
+
+	        // Add entities to list before sorting
+	        entityList.add(player);
+	        for (Entity npc : npcs) {
+	            if (npc != null) entityList.add(npc);
+	        }
+	        for (Entity object : obj) {
+	            if (object != null) entityList.add(object);
+	        }
+	        for (Entity monsterEntity : monster) {
+	            if (monsterEntity != null) entityList.add(monsterEntity);
+	        }
+
+	        // Sort entities by worldY (Y position) for proper drawing order
+	        Collections.sort(entityList, Comparator.comparingInt(e -> e.worldY));
+
+	        // Draw sorted entities
+	        for (Entity entity : entityList) {
+	            entity.draw(g2);
+	        }
+
+	        entityList.clear();  // Clear the list after drawing
+
+	        ui.draw(g2);  // Draw the UI last
+	    }
+
+	    g2.dispose();
 	}
+
 	public void playMusic(int i) {
 		sound.setFile(i);
 		sound.play();

@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -13,8 +14,7 @@ import main.KeyHandler;
 import main.Sound;
 import main.UI;
 import main.UtilityTool;
-import object.OBJ_Armour;
-import object.OBJ_Sword_Normal;
+import object.*;
 
 public class Player extends Entity {
 	KeyHandler keyH;
@@ -23,6 +23,11 @@ public class Player extends Entity {
 	public final int screenY;
 	public int attackCooldown=0;
 	public boolean attackCancelled=false;
+	public Entity luffy;
+	public Entity zoro;
+	public Entity currentCharacter;
+	public ArrayList<Entity> inventory=new ArrayList<>();
+	public final int maxInventorySize=20;
 	Sound se=new Sound();
 	
 	public Player(GamePanel gp,KeyHandler keyH) {
@@ -43,15 +48,20 @@ public class Player extends Entity {
 		attackArea.width=36;
 		attackArea.height=36;
 		
+		luffy=new Luffy(gp);
+		zoro=new Zoro(gp);
+		currentCharacter=zoro;
 		setDefaultValues();
-		getPlayerImg();
-		getPlayerAttackImage();
+//		getPlayerImg();
+//		getPlayerAttackImage();
+		setItems();
 	}
 	public void setDefaultValues() {
 		worldX=gp.tileSize*8;
 		worldY=gp.tileSize*5;
 		direction="down";
 		speed=4;
+		
 		
 		//player status
 		level=1;
@@ -60,134 +70,183 @@ public class Player extends Entity {
 		strength=1;
 		dexterity=1;
 		exp=0;
-		nextLevelExp=10;
+		nextLevelExp=5;
+		attack=1;
+		defence=1;
 		coin=0;
+		
 		currentHaki= new OBJ_Sword_Normal(gp);
 		currentShield=new OBJ_Armour(gp);
-		attack=getAttack();
-		defence=getDefence();
+		
 	}
-	public int getAttack() {
-		return attack=strength*currentHaki.attackValue;
+	public void setItems() {
+	inventory.add(currentHaki);	
+	inventory.add(currentShield);
+	inventory.add(new OBJ_Key(gp));
+	inventory.add(new OBJ_Chest(gp));
+	inventory.add(new OBJ_Food(gp));
+	inventory.add(new OBJ_Sword_Normal(gp));
+	inventory.add(currentShield);
+	inventory.add(new OBJ_Key(gp));
+
+	inventory.add(new OBJ_Food(gp));
+	inventory.add(new OBJ_Food(gp));
+	inventory.add(new OBJ_Sword_Normal(gp));
+	inventory.add(currentShield);
+	inventory.add(new OBJ_Key(gp));
+	inventory.add(new OBJ_Sword_Normal(gp));
+	inventory.add(currentShield);
+	inventory.add(new OBJ_Chest(gp));
+	inventory.add(new OBJ_Key(gp));
+	inventory.add(new OBJ_Chest(gp));
+	
+	inventory.add(new OBJ_Chest(gp));
+	inventory.add(new OBJ_Food(gp));
 	}
-	public int getDefence() {
-		return defence=dexterity*currentShield.defenseValue;
+	
+	public int getAttack(int i) {
+		if(i==1) {
+			return luffy.attack=luffy.strength*currentHaki.attackValue;
+		}else if(i==2) {
+			return zoro.attack=zoro.strength*currentHaki.attackValue;
+		}
+		return 0;
+	}
+	public int getDefence(int i) {
+		if(i==1) {
+			return luffy.defence=luffy.dexterity*currentShield.defenceValue;
+		}else if(i==2) {
+			return zoro.defence=zoro.dexterity*currentShield.defenceValue;
+		}
+		return 0;
 	}
 	public void getPlayerImg() {
-			up1=setup("/player/up1",gp.tileSize,gp.tileSize);
-			up2=setup("/player/up2",gp.tileSize,gp.tileSize);
-			down1=setup("/player/down1",gp.tileSize,gp.tileSize);
-			down2=setup("/player/down2",gp.tileSize,gp.tileSize);
-			left1=setup("/player/left1",gp.tileSize,gp.tileSize);
-			left2=setup("/player/left2",gp.tileSize,gp.tileSize);
-			right1=setup("/player/right1",gp.tileSize,gp.tileSize);
-			right2=setup("/player/right2",gp.tileSize,gp.tileSize);
-}
+		  if (currentCharacter instanceof Luffy) {
+		        currentCharacter.getPlayerImg();  // Call Luffy's method to load images
+		    } else if (currentCharacter instanceof Zoro) {
+		        currentCharacter.getPlayerImg();  // Call Zoro's method to load images
+		    }}
 	
 	public void getPlayerAttackImage() {
-		attackup1=setup("/player/attack_up1",gp.tileSize,gp.tileSize*2);
-		attackup2=setup("/player/attack_up2",gp.tileSize,gp.tileSize*2);
-		attackdown1=setup("/player/attack_down1",gp.tileSize,gp.tileSize*2);
-		attackdown2=setup("/player/attack_down2",gp.tileSize,gp.tileSize*2);
-		attackleft1=setup("/player/attack_left1",gp.tileSize*2,gp.tileSize);
-		attackleft2=setup("/player/attack_left2",gp.tileSize*2,gp.tileSize);
-		attackright1=setup("/player/attack_right1",gp.tileSize*2,gp.tileSize);
-		attackright2=setup("/player/attack_right2",gp.tileSize*2,gp.tileSize);
-	}
+		if (currentCharacter instanceof Luffy) {
+	        currentCharacter.getPlayerAttackImg();  // Call Luffy's method to load images
+	    } else if (currentCharacter instanceof Zoro) {
+	        currentCharacter.getPlayerAttackImg();  // Call Zoro's method to load images
+	    }}
+public void update() {
+    if (attackCooldown > 0) {
+        attackCooldown--; // Decrease cooldown each frame
+    }
+    if(gp.currentCharacter.equals("Luffy")) {
+    	currentCharacter=luffy;
+    }else if(gp.currentCharacter.equals("Zoro")) {
+    	currentCharacter=zoro;
+    }
+    if (attacking) {
+        if (attackCooldown == 0) { // Only play sound if cooldown is over
+            if(gp.currentCharacter=="Luffy") {
+            	gp.playSE(7); // Adjust this to your attack sound effect
+            }else if(gp.currentCharacter=="Zoro"){
+            	gp.playSE(8);
+            }
+            attackCooldown = 30; // Cooldown duration in frames (adjust as needed)
+        }
+        attacking();
+        return;
+    }
+updateStats();
 
-	public void update() {
-		
-		 if (attackCooldown > 0) {
-	            attackCooldown--; // Decrease cooldown each frame
-	        }
 
-	        if (attacking) {
-	            if (attackCooldown == 0) { // Only play sound if cooldown is over
-	                gp.playSE(7); // Adjust this to your attack sound effect
-	                attackCooldown = 30; // Cooldown duration in frames (adjust as needed)
-	                 
-	            }
-	           attacking();
-	            return;
-	        }
-	
-		
-		if(keyH.up||keyH.down||keyH.left||keyH.right||keyH.enterPressed) {
-		if(keyH.up) {direction="up";}
-		if(keyH.down) {direction="down";}
-		if(keyH.left) {direction="left";}
-		if(keyH.right) {direction="right";}
-		// check tile collision
-		collisionOn=false;
-		gp.checker.checkTile(this);
-		
-		//check object collision
-		int objInd=gp.checker.checkObj(this, true);
-		pickUp(objInd);
-		
-		//check NPC collision
-		int npcIndex=gp.checker.checkEntity(this,gp.npcs);
-		interactNPC(npcIndex);
-		
-	
-		//check monster collision
-		int monsterIndex=gp.checker.checkEntity(this,gp.monster);
-		contactMonster(monsterIndex);
-		//check event collision
-	
-		gp.eHandler.checkEvent();
-		
-	
-		
-		//if false player moves
-		if(collisionOn==false && !keyH.enterPressed) {
-			switch(direction) {
-			case "up":worldY=worldY-speed;
-				break;
-			case "down":worldY+=speed;
-				break;
-			case "left":worldX=worldX-speed;
-				break;
-			case "right":worldX+=speed;
-				break;
-			}
-		}
-		
-		if(keyH.enterPressed && !attackCancelled) {
-			attacking=true;
-//			spriteCounter=0;
-		}
-		attackCancelled=false;
-		
-		gp.keyH.enterPressed=false;
-		
-		spriteCounter++;
-		if(spriteCounter>10) {
-			if(spriteNum==1) {
-				spriteNum=2;
-			}else if(spriteNum==2){
-				spriteNum=1;
-			}
-			spriteCounter=0;
-		}
-		}
-//		else {
-//			stand++;
-//			if(stand==20) {
-//			spriteNum=1;
-//			stand=0;
-//			}
-//		} 
-		//invincibility
-		if(invincible) {
-			invincibleCount++;
-			if(invincibleCount>60) {
-				invincible=false;
-				invincibleCount=0;
-			}
-		}
+       
+
+    // Handle movement and collision detection
+    if (keyH.up || keyH.down || keyH.left || keyH.right || keyH.enterPressed) {
+        if (keyH.up) { direction = "up"; }
+        if (keyH.down) { direction = "down"; }
+        if (keyH.left) { direction = "left"; }
+        if (keyH.right) { direction = "right"; }
+
+        // Check tile collision
+        collisionOn = false;
+        gp.checker.checkTile(this);
+
+        // Check object collision
+        int objInd = gp.checker.checkObj(this, true);
+        pickUp(objInd);
+
+        // Check NPC collision
+        int npcIndex = gp.checker.checkEntity(this, gp.npcs);
+        interactNPC(npcIndex);
+
+        // Check monster collision
+        int monsterIndex = gp.checker.checkEntity(this, gp.monster);
+        contactMonster(monsterIndex);
+
+        // Check event collision
+        gp.eHandler.checkEvent();
+
+        // If no collision, move the player
+        if (!collisionOn && !keyH.enterPressed) {
+            switch (direction) {
+                case "up": worldY = worldY - speed; break;
+                case "down": worldY += speed; break;
+                case "left": worldX = worldX - speed; break;
+                case "right": worldX += speed; break;
+            }
+        }
+
+        // If attack is triggered
+        if (keyH.enterPressed && !attackCancelled) {
+            attacking = true;
+        }
+
+        attackCancelled = false;
+        gp.keyH.enterPressed = false;
+
+        // Handle sprite animation (walking)
+        spriteCounter++;
+        if (spriteCounter > 10) {
+            if (spriteNum == 1) {
+                spriteNum = 2;
+            } else if (spriteNum == 2) {
+                spriteNum = 1;
+            }
+            spriteCounter = 0;
+        }
+    }
+
+    // Handle invincibility after being hit
+    if (invincible) {
+        invincibleCount++;
+        if (invincibleCount > 60) {
+            invincible = false;
+            invincibleCount = 0;
+        }
+    }
+}
+public void updateStats() {
+	if(currentCharacter instanceof Luffy) {
+		level=luffy.level;
+		maxLife=luffy.maxLife;
+		life=luffy.maxLife;
+		strength=luffy.strength;
+		dexterity=luffy.dexterity;
+		exp=luffy.exp;
+		nextLevelExp=luffy.nextLevelExp;
+		attack=luffy.attack;
+		defence=luffy.defence;
+	}else if(currentCharacter instanceof Zoro) {
+		level=zoro.level;
+		maxLife=zoro.maxLife;
+		life=zoro.maxLife;
+		strength=zoro.strength;
+		dexterity=zoro.dexterity;
+		exp=zoro.exp;
+		nextLevelExp=zoro.nextLevelExp;
+		attack=zoro.attack;
+		defence=zoro.defence;
 	}
-	
+}
 	public void attacking() {
 		spriteCounter++;
 		if(spriteCounter<=5) {
@@ -195,7 +254,7 @@ public class Player extends Entity {
 		}
 		if(spriteCounter>5&&spriteCounter<=10) {
 			spriteNum=2;
-			
+		
 			int currentWorldX=worldX;
 			int currentWorldY=worldY;
 			int solidAreaWidth=solidArea.width;
@@ -263,12 +322,24 @@ public class Player extends Entity {
 			invincibleCount++;
 			if(!invincible) {
 				gp.playSE(8);
-				int damage=gp.monster[i].attack-defence;
-				if(damage<0) {
-					damage=1;
-				}
-				life-=damage;
+				int damage=0;
+				if(gp.currentCharacter=="Luffy") {
+	            	damage=gp.monster[i].attack-luffy.defence; 
+	            	if(damage<0) {
+						damage=1;
+					}
+					luffy.life-=damage;
+					// Adjust this to your attack sound effect
+	            }else if(gp.currentCharacter=="Zoro"){
+	            	damage=gp.monster[i].attack-zoro.defence;
+	            	if(damage<0) {
+						damage=1;
+					}
+					zoro.life-=damage;
+					invincible=true;
+	            }
 				invincible=true;
+				
 			}
 		}
 	}
@@ -277,10 +348,18 @@ public class Player extends Entity {
 			if(!gp.monster[i].invincible) {
 				gp.playSE(6);
 				
-				int damage=attack-gp.monster[i].defence;
+				int damage=0;
+				if(gp.currentCharacter=="Zoro") {
+				damage=zoro.attack-gp.monster[i].defence;
 				if(damage<0) {
 					damage=1;
 				}
+				}else if(gp.currentCharacter=="Luffy") {
+					damage=luffy.attack-gp.monster[i].defence;
+					if(damage<0) {
+						damage=1;
+					}
+					}
 				gp.monster[i].life-=damage;
 				gp.ui.addMessage(damage+" damage");
 				gp.monster[i].invincible=true;
@@ -288,26 +367,49 @@ public class Player extends Entity {
 				if(gp.monster[i].life<=0) {
 					gp.monster[i].dying=true;
 					gp.ui.addMessage("killed "+gp.monster[i].name);
-					exp+=gp.monster[i].exp;
-					checkLevelUp();
+					
+					if(gp.currentCharacter=="Luffy") {
+						luffy.exp+=gp.monster[i].exp;
+						checkLevelUp(1);
+						}
+					if(gp.currentCharacter=="Zoro") {
+						zoro.exp+=gp.monster[i].exp;
+						checkLevelUp(2);
+						}
 				}
 			}
 		}
 	}
-	public void checkLevelUp() {
-		if(exp>=nextLevelExp) {
-			level++;
-			nextLevelExp=nextLevelExp*2;
-			maxLife+=2;
-			strength++;
-			dexterity++;
-			attack=getAttack();
-			defence=getDefence();
+	public void checkLevelUp(int i) {
+		if(i==1) {
+		if(luffy.exp>=luffy.nextLevelExp) {
+			luffy.level++;
+			luffy.nextLevelExp=luffy.nextLevelExp*3;
+			luffy.maxLife+=2;
+			luffy.strength++;
+			luffy.dexterity++;
+			luffy.attack=getAttack(1);
+			luffy.defence=getDefence(1);
 			
 			gp.playSE(9);
 			gp.gameState=gp.dialogueState;
-			gp.ui.currentDialogue="                        Level "+level;
+			gp.ui.currentDialogue="                 luffy Level "+luffy.level;
 //			updateMonsters();
+		}
+		}else if(i==2) {
+			if(zoro.exp>=zoro.nextLevelExp) {
+			zoro.level++;
+			zoro.nextLevelExp=zoro.nextLevelExp*3;
+			zoro.maxLife+=2;
+			zoro.strength++;
+			zoro.dexterity++;
+			zoro.attack=getAttack(2);
+			zoro.defence=getDefence(2);
+			
+			gp.playSE(9);
+			gp.gameState=gp.dialogueState;
+			gp.ui.currentDialogue="                  zoro  Level "+zoro.level;
+		}
 		}
 	}
 //	public void updateMonsters() {
@@ -328,6 +430,7 @@ public class Player extends Entity {
 			if(spriteNum==1){image=up1;}
 			if(spriteNum==2){image=up2;}
 			}else {
+				
 			tempScreenY=screenY-gp.tileSize;
 			if(spriteNum==1){image=attackup1;}
 			if(spriteNum==2){image=attackup2;}

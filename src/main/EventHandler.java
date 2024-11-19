@@ -122,7 +122,8 @@ public class EventHandler {
 		gp.player.attackCancelled=true;
 		gp.playSE(4);
 		gp.ui.currentDialogue="You had rest and now are ready to go";
-		gp.player.life=gp.player.maxLife;
+		gp.player.luffy.life=gp.player.luffy.maxLife;
+		gp.player.zoro.life=gp.player.zoro.maxLife;
 		gp.as.setMonster();
 		}
 		canTouchEvent=false;

@@ -26,6 +26,9 @@ public class UI {
 	public int commandNum=0;
 	ArrayList<String> message=new ArrayList<>();
 	ArrayList<Integer> messageCounter=new ArrayList<>();
+	public int slotCol=0;
+	public int slotRow=0;
+	
 	public UI(GamePanel gp) {
 		this.gp=gp;
 
@@ -88,6 +91,7 @@ public class UI {
 		//char state
 		if(gp.gameState==gp.characterState) {
 			drawCharacterScreen();
+			drawInventory();
 		}
 		
 	
@@ -176,26 +180,48 @@ public class UI {
 		int y=gp.tileSize/3;
 		int i=0;
 		
-		//blank heart
-		while(i<gp.player.maxLife/2) {
-			g2.drawImage(null_heart, x, y,null);
-			i++;
-			x+=gp.tileSize;
-		}
-		 x=gp.tileSize/2;
-	     y=gp.tileSize/3;
-		 i=0;
-		 
-		 //draw current life
-		 while(i<gp.player.life) {
-			 g2.drawImage(half_heart, x, y,null);
-			 i++;
-			 if(i<gp.player.life) {
-				 g2.drawImage(full_heart,x,y,null);
+		if(gp.currentCharacter=="Luffy") {
+			//blank heart
+			while(i<gp.player.luffy.maxLife/2) {
+				g2.drawImage(null_heart, x, y,null);
+				i++;
+				x+=gp.tileSize;
+			}
+			 x=gp.tileSize/2;
+		     y=gp.tileSize/3;
+			 i=0;
+			 
+			 //draw current life
+			 while(i<gp.player.luffy.life) {
+				 g2.drawImage(half_heart, x, y,null);
+				 i++;
+				 if(i<gp.player.luffy.life) {
+					 g2.drawImage(full_heart,x,y,null);
+				 }
+				 i++;
+				 x+=gp.tileSize;
 			 }
-			 i++;
-			 x+=gp.tileSize;
-		 }
+		}else if(gp.currentCharacter=="Zoro") {
+			while(i<gp.player.zoro.maxLife/2) {
+				g2.drawImage(null_heart, x, y,null);
+				i++;
+				x+=gp.tileSize;
+			}
+			 x=gp.tileSize/2;
+		     y=gp.tileSize/3;
+			 i=0;
+			 
+			 //draw current life
+			 while(i<gp.player.zoro.life) {
+				 g2.drawImage(half_heart, x, y,null);
+				 i++;
+				 if(i<gp.player.zoro.life) {
+					 g2.drawImage(full_heart,x,y,null);
+				 }
+				 i++;
+				 x+=gp.tileSize;
+			 }
+		}
 	}
 	public void drawDialogueScreen() {
 		int x=gp.tileSize*2;
@@ -298,10 +324,73 @@ public class UI {
 	g2.drawString(value, textX, textY);
 	textY+=lineHeight;
 	
+//	BufferedImage image=setup("/objects/shusui",gp.tileSize,gp.tileSize);
+//	if(gp.currentCharacter=="Zoro") {
+//		g2.drawImage(full_heart, frameX, frameY, frameWidth, frameHeight, textX, textY, lineHeight, tailX, gp)
+//	}
+	
 
 	}
-	
-	
+	public void drawInventory() {
+		//frame
+		int frameX=gp.tileSize*9;
+		int frameY=gp.tileSize;
+		int frameWidth=gp.tileSize*6;
+		int frameHeight=gp.tileSize*5;
+		drawSubWindow(frameX,frameY,frameWidth,frameHeight);
+		
+		//slot
+		final int slotXstart=frameX+20;
+		final int slotYstart=frameY+20;
+		int slotX=slotXstart;
+		int slotY=slotYstart;
+		int slotSize=gp.tileSize+3;
+		
+		//draw player items
+		for(int i=0;i<gp.player.inventory.size();i++) {
+			
+			g2.drawImage(gp.player.inventory.get(i).down1,slotX,slotY,null);
+			
+			slotX+=slotSize;
+			if(i==4 || i==9 ||i==14) {
+				slotX=slotXstart;
+				slotY+=slotSize;
+			}
+		}
+		
+		//cursor
+		int cursorX=slotXstart+(slotSize*slotCol);
+		int cursorY=slotYstart+(slotSize*slotRow);
+		int cursorWidth=gp.tileSize;
+		int cursorHeight=gp.tileSize;
+		//draw cursor
+		g2.setColor(Color.white);
+		g2.setStroke(new BasicStroke(3));
+		g2.drawRoundRect(cursorX,cursorY,cursorWidth,cursorHeight,10,10);
+		
+		//description frame
+		int dFrameX=frameX;
+		int dFrameY=frameY+frameHeight;
+		int dFrameWidth=frameWidth;
+		int dFrameHeight=gp.tileSize*3;
+		drawSubWindow(dFrameX,dFrameY,dFrameWidth,dFrameHeight);
+		//description text
+		int textX=dFrameX+20;
+		int textY=dFrameY+gp.tileSize;
+		g2.setFont(g2.getFont().deriveFont(28F));
+		
+		int itemIndex=getItemIndex();
+		if(itemIndex<gp.player.inventory.size()) {
+			for(String line:gp.player.inventory.get(itemIndex).description.split("\n")) {
+			g2.drawString(line,textX,textY);
+			textY+=32;
+			}
+		}
+		
+	}
+	public int getItemIndex() {
+		return slotCol+(slotRow*5);
+	}
 	public void drawSubWindow(int x,int y,int width,int height) {
 		Color c=new Color(0,0,0,220);
 		g2.setColor(c);

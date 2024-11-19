@@ -5,7 +5,7 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
 	GamePanel gp;
-	public boolean up,down,left,right,enterPressed;
+	public boolean up,down,left,right,enterPressed,character1Pressed,character2Pressed;
 	@Override
 	public void keyTyped(KeyEvent e) {
 		int code=e.getKeyCode();
@@ -85,6 +85,14 @@ public void playState(int code) {
 	if(code==KeyEvent.VK_ENTER) {
 		enterPressed=true;
 	}
+	if (code == KeyEvent.VK_1) {
+		gp.switchCharacter("Luffy");
+		character1Pressed=true;
+		// Switch to Luffy
+	} else if (code == KeyEvent.VK_2) {
+		gp.switchCharacter("Zoro");
+		character2Pressed=true;// Switch to Zoro
+	}
 	}
 public void pauseState(int code) {
 	if(code == KeyEvent.VK_P) {
@@ -101,7 +109,33 @@ public void dialogueState(int code) {
 public void characterState(int code) {
 	if(code==KeyEvent.VK_C) {
 		gp.gameState=gp.playState;
+		gp.playSE(10);
 	}
+	if(code==KeyEvent.VK_W) {
+		if(gp.ui.slotRow!=0) {
+		gp.ui.slotRow--;
+		gp.playSE(10);
+		}
+	}
+    if(code==KeyEvent.VK_A) {
+    	if(gp.ui.slotCol!=0) {
+    	gp.ui.slotCol--;
+    	gp.playSE(10);
+    	}
+	}
+if(code==KeyEvent.VK_S) {
+	if(gp.ui.slotRow!=3) {
+	gp.ui.slotRow++;
+	gp.playSE(10);
+	}
+}
+if(code==KeyEvent.VK_D) {
+	if(gp.ui.slotCol!=4) {
+	gp.ui.slotCol++;
+	gp.playSE(10);
+	}
+}
+
 }
 
 	@Override
@@ -116,6 +150,23 @@ public void characterState(int code) {
 		}else if(code == KeyEvent.VK_D) {
 			right=false;
 		}
+		if(code==KeyEvent.VK_ENTER) {
+			enterPressed=false;
+		}
+		if (code == KeyEvent.VK_1) {
+            character1Pressed = false;
+        }
+        if (code == KeyEvent.VK_2) {
+            character2Pressed = false;
+        }
+		
 	}
+	 public boolean isCharacter1Pressed() {
+	        return character1Pressed;
+	    }
+
+	    public boolean isCharacter2Pressed() {
+	        return character2Pressed;
+	    }
 
 }
