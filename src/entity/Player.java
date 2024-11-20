@@ -28,6 +28,7 @@ public class Player extends Entity {
 	public Entity currentCharacter;
 	public ArrayList<Entity> inventory=new ArrayList<>();
 	public final int maxInventorySize=20;
+	
 	Sound se=new Sound();
 	
 	public Player(GamePanel gp,KeyHandler keyH) {
@@ -50,7 +51,7 @@ public class Player extends Entity {
 		
 		luffy=new Luffy(gp);
 		zoro=new Zoro(gp);
-		currentCharacter=zoro;
+		
 		setDefaultValues();
 //		getPlayerImg();
 //		getPlayerAttackImage();
@@ -74,41 +75,20 @@ public class Player extends Entity {
 		attack=1;
 		defence=1;
 		coin=0;
+
 		
-		currentHaki= new OBJ_Sword_Normal(gp);
 		currentShield=new OBJ_Armour(gp);
 		
 	}
 	public void setItems() {
-	inventory.add(currentHaki);	
-	inventory.add(currentShield);
-	inventory.add(new OBJ_Key(gp));
-	inventory.add(new OBJ_Chest(gp));
-	inventory.add(new OBJ_Food(gp));
-	inventory.add(new OBJ_Sword_Normal(gp));
-	inventory.add(currentShield);
-	inventory.add(new OBJ_Key(gp));
 
-	inventory.add(new OBJ_Food(gp));
-	inventory.add(new OBJ_Food(gp));
-	inventory.add(new OBJ_Sword_Normal(gp));
-	inventory.add(currentShield);
-	inventory.add(new OBJ_Key(gp));
-	inventory.add(new OBJ_Sword_Normal(gp));
-	inventory.add(currentShield);
-	inventory.add(new OBJ_Chest(gp));
-	inventory.add(new OBJ_Key(gp));
-	inventory.add(new OBJ_Chest(gp));
-	
-	inventory.add(new OBJ_Chest(gp));
-	inventory.add(new OBJ_Food(gp));
 	}
 	
 	public int getAttack(int i) {
 		if(i==1) {
-			return luffy.attack=luffy.strength*currentHaki.attackValue;
+			return luffy.attack=luffy.strength*currentWeapon.attackValue;
 		}else if(i==2) {
-			return zoro.attack=zoro.strength*currentHaki.attackValue;
+			return zoro.attack=zoro.strength*currentWeapon.attackValue;
 		}
 		return 0;
 	}
@@ -134,6 +114,9 @@ public class Player extends Entity {
 	        currentCharacter.getPlayerAttackImg();  // Call Zoro's method to load images
 	    }}
 public void update() {
+	if(currentWeapon!=null) {
+		currentWeaponName=currentWeapon.name;
+	}
     if (attackCooldown > 0) {
         attackCooldown--; // Decrease cooldown each frame
     }
@@ -288,15 +271,15 @@ public void updateStats() {
 	}
 	public void pickUp(int i) {
 		if(i!=999) {
-			String objName=gp.obj[i].name;
-			switch(objName) {
-			case "pit":
-				gp.obj[i]=null;
-				gp.ui.currentDialogue="You fell into a pit";
-				gp.gameState=gp.dialogueState;
-				break;
-		}			
-			
+			String text;
+			if(inventory.size()!=maxInventorySize) {
+				inventory.add(gp.obj[i]);
+				text="Got a "+gp.obj[i].name+"!";
+			}else {
+				text="your inventory is full";
+			}
+			gp.ui.addMessage(text);
+			gp.obj[i]=null;
 		}
 	}
 	public UI ui=new UI(gp);
@@ -320,7 +303,7 @@ public void updateStats() {
 	public void contactMonster(int i) {
 		if(i!=999) {
 			invincibleCount++;
-			if(!invincible) {
+			if(!invincible && !gp.monster[i].dying) {
 				gp.playSE(8);
 				int damage=0;
 				if(gp.currentCharacter=="Luffy") {
@@ -420,6 +403,28 @@ public void updateStats() {
 //			}
 //		}
 //	}
+	public void selectItem() {
+		int itemIndex=gp.ui.getItemIndex();
+		
+		if(itemIndex<inventory.size()) {
+			Entity selectedItem=inventory.get(itemIndex);
+			if(selectedItem.type==type_sword && gp.currentCharacter.equals("Zoro")) {	
+			currentWeapon=selectedItem;
+				attack=getAttack(2);
+			}
+			
+			if(selectedItem.type==type_consumable) {
+				//later
+				if(gp.currentCharacter.equals("Zoro")) {
+					selectedItem.use(zoro);
+				}else if(gp.currentCharacter.equals("Luffy")) {
+					selectedItem.use(luffy);
+				}
+				inventory.remove(itemIndex);
+			}
+		}
+		gp.ui.drawInventory();
+	}
 	public void draw(Graphics2D g2) {
 		BufferedImage image=null;
 		int tempScreenX=screenX;

@@ -15,7 +15,7 @@ public class MON_Pyro extends Entity {
 		speed=1;
 		maxLife=10;
 		life=maxLife;
-		type=2;
+		type=type_monster;
 		attack=6;
 		defence=0;
 		exp=4;

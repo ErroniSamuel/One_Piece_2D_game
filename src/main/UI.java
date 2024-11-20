@@ -272,7 +272,11 @@ public class UI {
 		g2.drawString("NextLevel", textX, textY);
 		textY+=lineHeight;
 		g2.drawString("Coin", textX, textY);
+		textY+=lineHeight*2;
+		if(gp.currentCharacter=="Zoro") {
+		g2.drawString("Weapon", textX, textY);
 		textY+=lineHeight;
+		}
 		
 		
 		int tailX=(frameX+frameWidth)-30;
@@ -323,7 +327,10 @@ public class UI {
 	textX=getXforAlignToRight(value,tailX);
 	g2.drawString(value, textX, textY);
 	textY+=lineHeight;
+	if(gp.currentCharacter=="Zoro" && gp.player.currentWeapon!=null) {
+	g2.drawImage(gp.player.currentWeapon.down1, textX-30, textY,null);
 	
+	}
 //	BufferedImage image=setup("/objects/shusui",gp.tileSize,gp.tileSize);
 //	if(gp.currentCharacter=="Zoro") {
 //		g2.drawImage(full_heart, frameX, frameY, frameWidth, frameHeight, textX, textY, lineHeight, tailX, gp)
@@ -349,6 +356,11 @@ public class UI {
 		//draw player items
 		for(int i=0;i<gp.player.inventory.size();i++) {
 			
+			if(gp.player.currentWeapon!=null && gp.player.inventory.get(i).name.equals(gp.player.currentWeapon.name)) {
+				g2.setColor(new Color(248,180,8));
+				g2.fillRoundRect(slotX, slotY, gp.tileSize,gp.tileSize,10,10);
+			}
+			
 			g2.drawImage(gp.player.inventory.get(i).down1,slotX,slotY,null);
 			
 			slotX+=slotSize;
@@ -373,7 +385,6 @@ public class UI {
 		int dFrameY=frameY+frameHeight;
 		int dFrameWidth=frameWidth;
 		int dFrameHeight=gp.tileSize*3;
-		drawSubWindow(dFrameX,dFrameY,dFrameWidth,dFrameHeight);
 		//description text
 		int textX=dFrameX+20;
 		int textY=dFrameY+gp.tileSize;
@@ -381,6 +392,8 @@ public class UI {
 		
 		int itemIndex=getItemIndex();
 		if(itemIndex<gp.player.inventory.size()) {
+			drawSubWindow(dFrameX,dFrameY,dFrameWidth,dFrameHeight);
+
 			for(String line:gp.player.inventory.get(itemIndex).description.split("\n")) {
 			g2.drawString(line,textX,textY);
 			textY+=32;

@@ -15,8 +15,8 @@ public class MON_Cryo extends Entity {
 		speed=1;
 		maxLife=6;
 		life=maxLife;
-		type=2;
-		attack=5;
+		type=type_monster;
+		attack=2;
 		defence=0;
 		exp=2;
 		

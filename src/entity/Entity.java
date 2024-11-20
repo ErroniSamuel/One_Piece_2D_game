@@ -35,7 +35,6 @@ public class Entity {
 	public BufferedImage image,image2,image3;
 	public String name;
 	public boolean collision=false;
-	public int type;//0-player,1-npc,2-monster
 	public boolean attacking=false;
 	public boolean cool=true;
 	public int coolDownCount=0;
@@ -56,13 +55,23 @@ public class Entity {
 	public int nextLevelExp;
 	public int coin;
 	public int characterType;
-	public Entity currentHaki;
+	public Entity currentWeapon;
 	public Entity currentShield;
+	public String currentWeaponName;
 	
 	//item Attributes
 	public int attackValue;
 	public int defenceValue;
 	public String description="";
+	
+	//type
+	public int type;//0-player,1-npc,2-monster
+	public final int type_player=0;
+	public final int type_npc=1;
+	public final int type_monster=2;
+	public final int type_sword=3;
+	public final int type_consumable=4;
+	
 	public Entity(GamePanel gp) {
 		this.gp=gp;
 	}
@@ -70,6 +79,7 @@ public class Entity {
 	public void getPlayerAttackImg(GamePanel gp) {}
 	public void getPlayerAttackImg() {}
 	public void getPlayerImg() {}
+	public void use(Entity entity) {}
 	public void setAction() {}
 	public void damageReaction() {}
 	public void speak() {
@@ -108,7 +118,7 @@ public class Entity {
 		gp.checker.checkEntity(this, gp.monster);
 		boolean contactPlayer=gp.checker.checkPlayer(this);
 		
-		if(this.type==2 && contactPlayer) {
+		if(this.type==type_monster && contactPlayer) {
 			if(!gp.player.invincible) {
 				gp.playSE(8);
 				
@@ -240,7 +250,6 @@ public void dyingAnimation(Graphics2D g2) {
 		if(dyingCounter%5!=0) {changeAlpha(g2,0f);}
 		else {changeAlpha(g2,1f);}
 	}else{
-		dying=false;
 		alive=false;
 	}
 }

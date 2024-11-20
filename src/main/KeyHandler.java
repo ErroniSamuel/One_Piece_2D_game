@@ -75,9 +75,7 @@ public void playState(int code) {
 	}else if(code == KeyEvent.VK_P) {
 		gp.gameState=gp.pauseState;
 	}
-	if(code==KeyEvent.VK_E) {
-		gp.player.attacking=true;
-	}
+	
 	if(code==KeyEvent.VK_C) {
 		gp.gameState=gp.characterState;
 	}
@@ -135,7 +133,9 @@ if(code==KeyEvent.VK_D) {
 	gp.playSE(10);
 	}
 }
-
+if(code==KeyEvent.VK_ENTER) {
+	gp.player.selectItem();
+}
 }
 
 	@Override

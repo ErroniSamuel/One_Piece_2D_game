@@ -10,7 +10,18 @@ public class AssetSetter {
 		this.gp=gp;
 	} 
 	public void setObject() {
+		gp.obj[0]=new OBJ_Sword_Normal(gp);
+		gp.obj[0].worldX=gp.tileSize*10;
+		gp.obj[0].worldY=gp.tileSize*6;
 		
+
+		gp.obj[1]=new OBJ_Food(gp);
+		gp.obj[1].worldX=gp.tileSize*12;
+		gp.obj[1].worldY=gp.tileSize*6;
+
+		gp.obj[2]=new OBJ_Food(gp);
+		gp.obj[2].worldX=gp.tileSize*10;
+		gp.obj[2].worldY=gp.tileSize*10;
 	}
 	public void setNPC() {
 		gp.npcs[0]=new NPC_Coby(gp);
