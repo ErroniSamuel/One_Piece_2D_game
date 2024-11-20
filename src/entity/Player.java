@@ -28,6 +28,7 @@ public class Player extends Entity {
 	public Entity currentCharacter;
 	public ArrayList<Entity> inventory=new ArrayList<>();
 	public final int maxInventorySize=20;
+	public int characterNum=1;
 	
 	Sound se=new Sound();
 	
@@ -75,20 +76,18 @@ public class Player extends Entity {
 		attack=1;
 		defence=1;
 		coin=0;
-
 		
 		currentShield=new OBJ_Armour(gp);
 		
 	}
 	public void setItems() {
-
 	}
 	
 	public int getAttack(int i) {
 		if(i==1) {
-			return luffy.attack=luffy.strength*currentWeapon.attackValue;
+			return luffy.attack=luffy.strength*((currentWeapon==null)?1:currentWeapon.attackValue);
 		}else if(i==2) {
-			return zoro.attack=zoro.strength*currentWeapon.attackValue;
+			return zoro.attack=zoro.strength*((currentWeapon==null)?1:currentWeapon.attackValue);
 		}
 		return 0;
 	}
@@ -122,14 +121,18 @@ public void update() {
     }
     if(gp.currentCharacter.equals("Luffy")) {
     	currentCharacter=luffy;
+    	characterNum=1;
+        projectile=luffy.projectile;
     }else if(gp.currentCharacter.equals("Zoro")) {
     	currentCharacter=zoro;
+    	characterNum=2;
+        projectile=zoro.projectile;
     }
     if (attacking) {
         if (attackCooldown == 0) { // Only play sound if cooldown is over
-            if(gp.currentCharacter=="Luffy") {
+            if(characterNum==1) {
             	gp.playSE(7); // Adjust this to your attack sound effect
-            }else if(gp.currentCharacter=="Zoro"){
+            }else if(characterNum==2){
             	gp.playSE(8);
             }
             attackCooldown = 30; // Cooldown duration in frames (adjust as needed)
@@ -197,7 +200,15 @@ updateStats();
             spriteCounter = 0;
         }
     }
-
+    
+    if(projectile!=null && gp.keyH.projectilePressed && !projectile.alive && shotAvailableCounter==60) {
+   
+    projectile.set(worldX,worldY,direction,true,currentCharacter);   
+    gp.projectileList.add(projectile);
+    
+    shotAvailableCounter=0;
+    }
+    
     // Handle invincibility after being hit
     if (invincible) {
         invincibleCount++;
@@ -205,6 +216,17 @@ updateStats();
             invincible = false;
             invincibleCount = 0;
         }
+    }
+    
+    if(shotAvailableCounter<60) {
+    	shotAvailableCounter++;
+    }
+    
+    
+    if(characterNum==1) {
+    	luffy=currentCharacter;
+    }else if(characterNum==2) {
+    	zoro=currentCharacter;
     }
 }
 public void updateStats() {
@@ -261,7 +283,7 @@ public void updateStats() {
 			worldY=currentWorldY;
 			solidArea.width=solidAreaWidth;
 			solidArea.height=solidAreaHeight;
-			damageMonster(monsterIndex);
+			damageMonster(monsterIndex,currentCharacter.attack);
 		}
 		if(spriteCounter>15) {
 			spriteNum=1;
@@ -306,14 +328,14 @@ public void updateStats() {
 			if(!invincible && !gp.monster[i].dying) {
 				gp.playSE(8);
 				int damage=0;
-				if(gp.currentCharacter=="Luffy") {
-	            	damage=gp.monster[i].attack-luffy.defence; 
+				if(characterNum==1) {
+	            	damage=gp.monster[i].attack-currentCharacter.defence; 
 	            	if(damage<0) {
 						damage=1;
 					}
-					luffy.life-=damage;
+					currentCharacter.life-=damage;
 					// Adjust this to your attack sound effect
-	            }else if(gp.currentCharacter=="Zoro"){
+	            }else if(characterNum==2){
 	            	damage=gp.monster[i].attack-zoro.defence;
 	            	if(damage<0) {
 						damage=1;
@@ -326,23 +348,18 @@ public void updateStats() {
 			}
 		}
 	}
-	public void damageMonster(int i) {
+	public void damageMonster(int i,int attack) {
 		if(i!=999) {
 			if(!gp.monster[i].invincible) {
 				gp.playSE(6);
 				
 				int damage=0;
-				if(gp.currentCharacter=="Zoro") {
-				damage=zoro.attack-gp.monster[i].defence;
+			
+				damage=attack-gp.monster[i].defence;
 				if(damage<0) {
 					damage=1;
 				}
-				}else if(gp.currentCharacter=="Luffy") {
-					damage=luffy.attack-gp.monster[i].defence;
-					if(damage<0) {
-						damage=1;
-					}
-					}
+					
 				gp.monster[i].life-=damage;
 				gp.ui.addMessage(damage+" damage");
 				gp.monster[i].invincible=true;
@@ -351,11 +368,11 @@ public void updateStats() {
 					gp.monster[i].dying=true;
 					gp.ui.addMessage("killed "+gp.monster[i].name);
 					
-					if(gp.currentCharacter=="Luffy") {
+					if(characterNum==1) {
 						luffy.exp+=gp.monster[i].exp;
 						checkLevelUp(1);
 						}
-					if(gp.currentCharacter=="Zoro") {
+					if(characterNum==2) {
 						zoro.exp+=gp.monster[i].exp;
 						checkLevelUp(2);
 						}
@@ -408,16 +425,16 @@ public void updateStats() {
 		
 		if(itemIndex<inventory.size()) {
 			Entity selectedItem=inventory.get(itemIndex);
-			if(selectedItem.type==type_sword && gp.currentCharacter.equals("Zoro")) {	
+			if(selectedItem.type==type_sword && characterNum==2) {	
 			currentWeapon=selectedItem;
 				attack=getAttack(2);
 			}
 			
 			if(selectedItem.type==type_consumable) {
 				//later
-				if(gp.currentCharacter.equals("Zoro")) {
+				if(characterNum==2) {
 					selectedItem.use(zoro);
-				}else if(gp.currentCharacter.equals("Luffy")) {
+				}else if(characterNum==1) {
 					selectedItem.use(luffy);
 				}
 				inventory.remove(itemIndex);

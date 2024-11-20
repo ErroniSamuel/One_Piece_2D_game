@@ -5,7 +5,7 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
 	GamePanel gp;
-	public boolean up,down,left,right,enterPressed,character1Pressed,character2Pressed;
+	public boolean up,down,left,right,enterPressed,character1Pressed,character2Pressed,projectilePressed;
 	@Override
 	public void keyTyped(KeyEvent e) {
 		int code=e.getKeyCode();
@@ -78,6 +78,9 @@ public void playState(int code) {
 	
 	if(code==KeyEvent.VK_C) {
 		gp.gameState=gp.characterState;
+	}
+	if(code==KeyEvent.VK_E) {
+		projectilePressed=true;;
 	}
 	
 	if(code==KeyEvent.VK_ENTER) {
@@ -159,6 +162,9 @@ if(code==KeyEvent.VK_ENTER) {
         if (code == KeyEvent.VK_2) {
             character2Pressed = false;
         }
+        if(code==KeyEvent.VK_E) {
+    		projectilePressed=false;
+    	}
 		
 	}
 	 public boolean isCharacter1Pressed() {

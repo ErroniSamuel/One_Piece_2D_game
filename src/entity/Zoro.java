@@ -1,6 +1,7 @@
 package entity;
 
 import main.GamePanel;
+import object.Pound_Ho;
 
 public class Zoro extends Entity {
 	
@@ -19,6 +20,7 @@ public class Zoro extends Entity {
 		nextLevelExp=5;
 		attack=1;
 		defence=1;
+		projectile=new Pound_Ho(gp);
 				
 		
 	}

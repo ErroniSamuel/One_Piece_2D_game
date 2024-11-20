@@ -58,11 +58,16 @@ public class Entity {
 	public Entity currentWeapon;
 	public Entity currentShield;
 	public String currentWeaponName;
+	public int maxHaki;
+	public int haki;
+	public int shotAvailableCounter=0;
+	public Projectile projectile;
 	
 	//item Attributes
 	public int attackValue;
 	public int defenceValue;
 	public String description="";
+	public int useCost;
 	
 	//type
 	public int type;//0-player,1-npc,2-monster

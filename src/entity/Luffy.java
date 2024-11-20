@@ -1,6 +1,7 @@
 package entity;
 
 import main.GamePanel;
+import object.Red_Hawk;
 
 public class Luffy extends Entity{
 	public Luffy(GamePanel gp) {
@@ -17,6 +18,8 @@ public class Luffy extends Entity{
 		nextLevelExp=5;
 		attack=1;
 		defence=1;
+		
+		projectile=new Red_Hawk(gp);
 	}
 	public void resetImages() {
 	    if (gp.player != null) {
