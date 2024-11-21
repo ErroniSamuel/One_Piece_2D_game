@@ -12,6 +12,8 @@ public class Luffy extends Entity{
 		level=1;
 		maxLife=4;
 		life=maxLife;
+		maxHaki=1;
+		haki=maxHaki;
 		strength=1;
 		dexterity=1;
 		exp=0;

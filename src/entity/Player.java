@@ -201,11 +201,11 @@ updateStats();
         }
     }
     
-    if(projectile!=null && gp.keyH.projectilePressed && !projectile.alive && shotAvailableCounter==60) {
+    if(currentCharacter.haki>0 && gp.keyH.projectilePressed && !projectile.alive && shotAvailableCounter==30) {
    
     projectile.set(worldX,worldY,direction,true,currentCharacter);   
     gp.projectileList.add(projectile);
-    
+    currentCharacter.haki--;
     shotAvailableCounter=0;
     }
     
@@ -218,7 +218,7 @@ updateStats();
         }
     }
     
-    if(shotAvailableCounter<60) {
+    if(shotAvailableCounter<30) {
     	shotAvailableCounter++;
     }
     
@@ -335,16 +335,11 @@ public void updateStats() {
 					}
 					currentCharacter.life-=damage;
 					// Adjust this to your attack sound effect
-	            }else if(characterNum==2){
-	            	damage=gp.monster[i].attack-zoro.defence;
-	            	if(damage<0) {
-						damage=1;
-					}
-					zoro.life-=damage;
-					invincible=true;
-	            }
+	            
 				invincible=true;
 				
+				}
+				invincible=true;
 			}
 		}
 	}
@@ -367,7 +362,10 @@ public void updateStats() {
 				if(gp.monster[i].life<=0) {
 					gp.monster[i].dying=true;
 					gp.ui.addMessage("killed "+gp.monster[i].name);
-					
+					currentCharacter.haki++;
+					if(currentCharacter.haki>currentCharacter.maxHaki) {
+						currentCharacter.haki=currentCharacter.maxHaki;
+					}
 					if(characterNum==1) {
 						luffy.exp+=gp.monster[i].exp;
 						checkLevelUp(1);
@@ -390,6 +388,7 @@ public void updateStats() {
 			luffy.dexterity++;
 			luffy.attack=getAttack(1);
 			luffy.defence=getDefence(1);
+			luffy.maxHaki++;
 			
 			gp.playSE(9);
 			gp.gameState=gp.dialogueState;
@@ -405,6 +404,7 @@ public void updateStats() {
 			zoro.dexterity++;
 			zoro.attack=getAttack(2);
 			zoro.defence=getDefence(2);
+			zoro.maxHaki++;
 			
 			gp.playSE(9);
 			gp.gameState=gp.dialogueState;

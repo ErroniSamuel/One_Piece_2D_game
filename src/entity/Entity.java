@@ -125,23 +125,7 @@ public class Entity {
 		
 		if(this.type==type_monster && contactPlayer) {
 			if(!gp.player.invincible) {
-				gp.playSE(8);
-				
-				int damage=0;
-				if(gp.currentCharacter=="Luffy") {
-				damage=attack-gp.player.luffy.defence;
-				if(damage<0) {
-					damage=0;
-				}
-				gp.player.luffy.life-=damage;
-				}else if(gp.currentCharacter=="Zoro") {
-					damage=attack-gp.player.zoro.defence;
-					if(damage<0) {
-						damage=0;
-					}
-					gp.player.zoro.life-=damage;
-					}
-				gp.player.invincible=true;
+			damagePlayer(attack);
 			}
 		}
 		if(collisionOn==false) {
@@ -173,7 +157,9 @@ public class Entity {
 				invincibleCount=0;
 			}
 		}
-		
+		if(shotAvailableCounter<30) {
+			shotAvailableCounter++;
+		}
 	}
 
 
@@ -187,6 +173,18 @@ public BufferedImage setup(String imagePath,int width,int height) {
 		e.printStackTrace();
 	}
 	return scaledImage;
+}
+public void damagePlayer(int attack) {
+	gp.playSE(8);
+	
+	int damage=0;
+	
+	damage=attack-gp.player.currentCharacter.defence;
+	if(damage<0) {
+		damage=0;
+	}
+	gp.player.currentCharacter.life-=damage;
+	gp.player.invincible=true;
 }
 public void draw(Graphics2D g2) {
 	BufferedImage image=null;
@@ -243,7 +241,7 @@ public void draw(Graphics2D g2) {
 	   if(dying==true) {
 			dyingAnimation(g2);
 		}
-		g2.drawImage(image, screenX, screenY,gp.tileSize,gp.tileSize,null);		
+		g2.drawImage(image, screenX, screenY,null);		
 
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
 		}
@@ -251,7 +249,7 @@ public void draw(Graphics2D g2) {
 }
 public void dyingAnimation(Graphics2D g2) {
 	dyingCounter++;
-	if(dyingCounter<=40) {
+	if(dyingCounter<=30) {
 		if(dyingCounter%5!=0) {changeAlpha(g2,0f);}
 		else {changeAlpha(g2,1f);}
 	}else{

@@ -4,6 +4,7 @@ import java.util.Random;
 
 import entity.Entity;
 import main.GamePanel;
+import object.Electro_Ball;
 
 public class MON_Electro extends Entity {
 	GamePanel gp;
@@ -19,6 +20,7 @@ public class MON_Electro extends Entity {
 		attack=6;
 		defence=0;
 		exp=4;
+		projectile=new Electro_Ball(gp);
 		
 		solidArea.x=2;
 		solidArea.y=16;
@@ -57,6 +59,12 @@ public class MON_Electro extends Entity {
 			direction="right";
 		}
 		actionLookCounter=0;
+		}
+		int i=new Random().nextInt(100)+1;
+		if(i>99 && !projectile.alive && shotAvailableCounter==30) {
+			projectile.set(worldX, worldY, direction, true, this);
+			gp.projectileList.add(projectile);
+			shotAvailableCounter=0;
 		}
 	}
 	public void damageReaction() {

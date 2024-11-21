@@ -17,49 +17,57 @@ public class Projectile extends Entity{
 		this.alive=alive;
 		this.user=user;
 		this.life=this.maxLife;
+		this.count=0;
+		this.collisionOn = false;
 	}
-	public void update(){
-		if(user==gp.player.luffy ||user==gp.player.zoro) {
-		int monsterIndex=gp.checker.checkEntity(this, gp.monster);
-		if(monsterIndex!=999) {
-			gp.player.damageMonster(monsterIndex,attack);
-			alive=false;
-		}
-		}else {
-			
-		}
-		gp.checker.checkTile(this);
-		if(collisionOn) {
-			count++;
-			if(count>5) {
-			alive=false;
-			collisionOn=false;
-			count=0;
-			}
-		}
-		if(!alive) {
-			count=0;
-		}
-		switch(direction) {
-		case "up":worldY-=speed;break;
-		case "down":worldY+=speed;break;
-		case "left":worldX-=speed;break;
-		case "right":worldX+=speed;break;
-		}
-		
-		life--;
-		if(life<=0) {
-			alive=false;
-		}
-		spriteCounter++;
-		if(spriteCounter>12) {
-			if(spriteNum==1) {
-				spriteNum=2;
-			}else if(spriteNum==2) {
-				spriteNum=1;
-			}
-			spriteCounter=0;
-		}
+	public void update() {
+	    if (user == gp.player.luffy || user == gp.player.zoro) {
+	        // Check if projectile hits a monster
+	        int monsterIndex = gp.checker.checkEntity(this, gp.monster);
+	        if (monsterIndex != 999) {
+	            gp.player.damageMonster(monsterIndex, attack+gp.player.currentCharacter.attack);
+	            alive = false; // Set alive to false, but do not reset life
+	        }
+	    } else {
+	        // Check if projectile hits the player
+	        boolean contactPlayer = gp.checker.checkPlayer(this);
+	        if (!gp.player.invincible && contactPlayer) {
+	            damagePlayer(attack);
+	            alive = false;
+	        }
+	    }
+
+	    // Check for tile collisions
+	    gp.checker.checkTile(this);
+	    if (collisionOn) {
+	        count++;
+	        if (count > 5) { // If stuck in a collision for too long
+	            alive = false;
+	            collisionOn = false;
+	            count = 0;
+	        }
+	    }
+
+	    // Move the projectile
+	    switch (direction) {
+	        case "up": worldY -= speed; break;
+	        case "down": worldY += speed; break;
+	        case "left": worldX -= speed; break;
+	        case "right": worldX += speed; break;
+	    }
+
+	    // Decrease life over time
+	    life--;
+	    if (life <= 0) {
+	        alive = false; // Set alive to false, but do not reset life here
+	    }
+
+	    // Animate the sprite
+	    spriteCounter++;
+	    if (spriteCounter > 12) {
+	        spriteNum = (spriteNum == 1) ? 2 : 1;
+	        spriteCounter = 0;
+	    }
 	}
 
 }

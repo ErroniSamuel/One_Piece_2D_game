@@ -119,11 +119,13 @@ public class EventHandler {
 		}
 		if(gp.keyH.enterPressed) {
 		gp.gameState=gameState;
-		gp.player.attackCancelled=true;
-		gp.playSE(4);
 		gp.ui.currentDialogue="You had rest and now are ready to go";
+		gp.playSE(4);
+		gp.player.attackCancelled=true;
 		gp.player.luffy.life=gp.player.luffy.maxLife;
 		gp.player.zoro.life=gp.player.zoro.maxLife;
+		gp.player.luffy.haki=gp.player.luffy.maxHaki;
+		gp.player.zoro.haki=gp.player.zoro.maxHaki;
 		gp.as.setMonster();
 		}
 		canTouchEvent=false;

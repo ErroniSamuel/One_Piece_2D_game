@@ -12,7 +12,7 @@ public class Red_Hawk extends Projectile{
 		speed=7;
 		maxLife=80;
 		life=maxLife;
-		attack=10;
+		attack=3;
 		useCost=1;
 		alive=false;
 		getImage();

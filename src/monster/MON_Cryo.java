@@ -4,6 +4,7 @@ import java.util.Random;
 
 import entity.Entity;
 import main.GamePanel;
+import object.Bubble;
 
 public class MON_Cryo extends Entity {
 	GamePanel gp;
@@ -19,6 +20,7 @@ public class MON_Cryo extends Entity {
 		attack=2;
 		defence=0;
 		exp=2;
+		projectile=new Bubble(gp);
 		
 		solidArea.x=2;
 		solidArea.y=16;
@@ -57,6 +59,12 @@ public class MON_Cryo extends Entity {
 			direction="right";
 		}
 		actionLookCounter=0;
+		}
+		int i=new Random().nextInt(100)+1;
+		if(i>99 && !projectile.alive && shotAvailableCounter==30) {
+			projectile.set(worldX, worldY, direction, true, this);
+			gp.projectileList.add(projectile);
+			shotAvailableCounter=0;
 		}
 	}
 	public void damageReaction() {

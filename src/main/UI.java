@@ -18,7 +18,7 @@ public class UI {
 	GamePanel gp;
 	Graphics2D g2;
 	Font Obelix,MaruMonica,Original;
-	BufferedImage full_heart,half_heart,null_heart;
+	BufferedImage full_heart,half_heart,null_heart,haki_full,haki_null;
 	public boolean messageOn=false;
 //	public String message="";
 	public boolean gameFinished=false;
@@ -53,6 +53,10 @@ public class UI {
 		full_heart=heart.image;
 		half_heart=heart.image2;
 		null_heart=heart.image3;
+		
+		Entity haki=new OBJ_Haki(gp);
+		haki_full=haki.image;
+		haki_null=haki.image2;
 	}
 	
 	public void addMessage(String text) {
@@ -180,9 +184,9 @@ public class UI {
 		int y=gp.tileSize/3;
 		int i=0;
 		
-		if(gp.currentCharacter=="Luffy") {
+		
 			//blank heart
-			while(i<gp.player.luffy.maxLife/2) {
+			while(i<gp.player.currentCharacter.maxLife/2) {
 				g2.drawImage(null_heart, x, y,null);
 				i++;
 				x+=gp.tileSize;
@@ -192,36 +196,33 @@ public class UI {
 			 i=0;
 			 
 			 //draw current life
-			 while(i<gp.player.luffy.life) {
+			 while(i<gp.player.currentCharacter.life) {
 				 g2.drawImage(half_heart, x, y,null);
 				 i++;
-				 if(i<gp.player.luffy.life) {
+				 if(i<gp.player.currentCharacter.life) {
 					 g2.drawImage(full_heart,x,y,null);
 				 }
 				 i++;
 				 x+=gp.tileSize;
-			 }
-		}else if(gp.currentCharacter=="Zoro") {
-			while(i<gp.player.zoro.maxLife/2) {
-				g2.drawImage(null_heart, x, y,null);
-				i++;
-				x+=gp.tileSize;
-			}
-			 x=gp.tileSize/2;
-		     y=gp.tileSize/3;
-			 i=0;
-			 
-			 //draw current life
-			 while(i<gp.player.zoro.life) {
-				 g2.drawImage(half_heart, x, y,null);
-				 i++;
-				 if(i<gp.player.zoro.life) {
-					 g2.drawImage(full_heart,x,y,null);
-				 }
-				 i++;
-				 x+=gp.tileSize;
-			 }
 		}
+			 //draw haki
+			 
+			 x=gp.tileSize/2;
+			 y=gp.tileSize+10;
+			 i=0;
+			 while(i<gp.player.currentCharacter.maxHaki) {
+				 g2.drawImage(haki_null,x,y,null);
+				 i++;
+				 x+=gp.tileSize;
+			 }
+			 x=gp.tileSize/2;
+			 y=gp.tileSize+10;
+			 i=0;
+			 while(i<gp.player.currentCharacter.haki) {
+				 g2.drawImage(haki_full,x,y,null);
+				 i++;
+				 x+=gp.tileSize;
+			 }
 	}
 	public void drawDialogueScreen() {
 		int x=gp.tileSize*2;
